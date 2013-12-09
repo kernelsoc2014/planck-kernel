@@ -1,0 +1,14 @@
+# Visual Studio User Files
+*.suo
+*.user
+*.sln.docstates
+
+# OS Detritus
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+build
+stage
