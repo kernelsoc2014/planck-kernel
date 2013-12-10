@@ -1,0 +1,5 @@
+#!/bin/bash
+
+BUILDDIR=build/$PLANCK_PLATFORM/$PLANCK_CONFIGURATION
+
+qemu-system-x86_64 -kernel $BUILDDIR/boot/planck_kernel -cpu Westmere -m 512 -hda fat:$BUILDDIR

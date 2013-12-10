@@ -1,9 +1,16 @@
 require 'ostruct'
 
 $configuration = OpenStruct.new
-$configuration.configuration = ENV['CONFIGURATION'] || 'Checked'
-$configuration.platform = ENV['PLATFORM'] || 'x86'
-$configuration.output = file("build/#{$configuration.platform}/#{$configuration.configuration}/")
+$configuration.configuration = ENV['PLANCK_CONFIGURATION'] || 'Checked'
+$configuration.platform = ENV['PLANCK_PLATFORM'] || 'x86'
+
+# Fix for Windows builds
+if ENV['PLANCK_BUILD_OUT'] then
+    path = Pathname.new(File.realpath(ENV['PLANCK_BUILD_OUT'])).relative_path_from(Pathname.pwd)
+    $configuration.output = file(path)
+else
+    $configuration.output = file("build/#{$configuration.platform}/#{$configuration.configuration}/")
+end
 
 if not [ "Checked", "Free" ].include? $configuration.configuration then
     abort "Invalid configuration #{$configuration.configuration}."

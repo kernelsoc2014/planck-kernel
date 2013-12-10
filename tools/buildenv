@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export PLANCK_SRC=`pwd`
+export PATH=$PLANCK_SRC/tools:$PATH

@@ -1,6 +1,6 @@
-
 if $configuration.platform == 'x86' then
     basic_rules = Configuration.new $kernel.basic_rules do
+        includes files('arch/x86/include', 'arch/x86/include/x86')
         defines :__i386__ => 1
     end
 
@@ -23,6 +23,7 @@ if $configuration.platform == 'x86' then
     end
 elsif $configuration.platform == 'x86_64' then
     basic_rules = Configuration.new basic_rules do
+        includes files('arch/x86/include', 'arch/x86/include/x64')
         defines :__x86_64__ => 1
     end
 
@@ -45,5 +46,7 @@ elsif $configuration.platform == 'x86_64' then
     end
 end
 
-$kernel.as_rules = Configuration.new $kernel.as_rules, as_rules
+$kernel.as_rules = Configuration.new $kernel.as_rules, as_rules do
+end
+
 $kernel.cc_rules = Configuration.new $kernel.cc_rules, cc_rules

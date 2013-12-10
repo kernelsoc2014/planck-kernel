@@ -17,7 +17,7 @@ project "planck_kernel" do
     planck_kernel = build :target_ld, $kernel.sources, $kernel.ld_rules do
         depends $kernel.linker_script
         script $kernel.linker_script
-        output $configuration.output + 'planck_kernel'
+        output $configuration.output + 'boot/planck_kernel'
     end
 
     register_package :libinput => planck_kernel

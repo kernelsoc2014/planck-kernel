@@ -1,7 +1,11 @@
+import 'boot'
 
 project 'kernel/arch' do
-    dirs = [ 'kernel' ]
-    deps = find_packages "kernel/arch"
+    arch = $configuration.platform == 'x86_64' ? 'x64' : 'x86'
+    dirs = [
+        'boot', "boot/#{arch}"
+        'kernel', "kernel/#{arch}"
+    ]
 
     cc_files = mglob dirs, '*.c'
     cxx_files = mglob dirs, '*.cpp'

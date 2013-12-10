@@ -14,5 +14,3 @@
  * put it inside the section definition.
  */
 
-
- asdasd
