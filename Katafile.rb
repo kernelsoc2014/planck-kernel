@@ -29,4 +29,4 @@ $target.basic_rules = Configuration.new $basic_rules do
 end
 
 kataload "config/#{$configuration.platform}/arch.rb"
-kataload "kernel.rb"
+import 'planck'

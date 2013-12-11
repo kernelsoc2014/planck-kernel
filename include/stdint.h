@@ -1,263 +1,191 @@
-/* Copyright (C) 2008-2013 Free Software Foundation, Inc.
+#pragma once
 
-This file is part of GCC.
+#ifndef __KERNEL__
+#include_next <stdint.h>
+#else
 
-GCC is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3, or (at your option)
-any later version.
+#include <arch/types.h>
 
-GCC is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+typedef u_int8_t              uint8_t;   /* u_int8_t is defined in <arch/types.h> */
+typedef u_int16_t            uint16_t;   /* u_int16_t is defined in <arch/types.h> */
+typedef u_int32_t            uint32_t;   /* u_int32_t is defined in <arch/types.h> */
+typedef u_int64_t            uint64_t;   /* u_int64_t is defined in <arch/types.h> */
 
-Under Section 7 of GPL version 3, you are granted additional
-permissions described in the GCC Runtime Library Exception, version
-3.1, as published by the Free Software Foundation.
 
-You should have received a copy of the GNU General Public License and
-a copy of the GCC Runtime Library Exception along with this program;
-see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
-<http://www.gnu.org/licenses/>.  */
+/* 7.18.1.2 Minimum-width integer types */
+typedef int8_t           int_least8_t;
+typedef int16_t         int_least16_t;
+typedef int32_t         int_least32_t;
+typedef int64_t         int_least64_t;
+typedef uint8_t         uint_least8_t;
+typedef uint16_t       uint_least16_t;
+typedef uint32_t       uint_least32_t;
+typedef uint64_t       uint_least64_t;
 
-/*
- * ISO C Standard:  7.18  Integer types  <stdint.h>
+
+/* 7.18.1.3 Fastest-width integer types */
+typedef int8_t            int_fast8_t;
+typedef int16_t          int_fast16_t;
+typedef int32_t          int_fast32_t;
+typedef int64_t          int_fast64_t;
+typedef uint8_t          uint_fast8_t;
+typedef uint16_t        uint_fast16_t;
+typedef uint32_t        uint_fast32_t;
+typedef uint64_t        uint_fast64_t;
+
+
+/* 7.18.1.4 Integer types capable of holding object pointers */
+                                        /* intptr_t is defined in <arch/types.h> */
+                                        /* uintptr_t is defined in <arch/types.h> */
+
+
+/* 7.18.1.5 Greatest-width integer types */
+typedef long long                intmax_t;
+typedef unsigned long long      uintmax_t;
+
+/* 7.18.2 Limits of specified-width integer types:
+ *   These #defines specify the minimum and maximum limits
+ *   of each of the types declared above.
  */
 
-#ifndef _GCC_STDINT_H
-#define _GCC_STDINT_H
 
-/* 7.8.1.1 Exact-width integer types */
+/* 7.18.2.1 Limits of exact-width integer types */
+#define INT8_MAX         127
+#define INT16_MAX        32767
+#define INT32_MAX        2147483647
+#define INT64_MAX        9223372036854775807LL
 
-#ifdef __INT8_TYPE__
-typedef __INT8_TYPE__ int8_t;
-#endif
-#ifdef __INT16_TYPE__
-typedef __INT16_TYPE__ int16_t;
-#endif
-#ifdef __INT32_TYPE__
-typedef __INT32_TYPE__ int32_t;
-#endif
-#ifdef __INT64_TYPE__
-typedef __INT64_TYPE__ int64_t;
-#endif
-#ifdef __UINT8_TYPE__
-typedef __UINT8_TYPE__ uint8_t;
-#endif
-#ifdef __UINT16_TYPE__
-typedef __UINT16_TYPE__ uint16_t;
-#endif
-#ifdef __UINT32_TYPE__
-typedef __UINT32_TYPE__ uint32_t;
-#endif
-#ifdef __UINT64_TYPE__
-typedef __UINT64_TYPE__ uint64_t;
-#endif
+#define INT8_MIN          -128
+#define INT16_MIN         -32768
+   /*
+      Note:  the literal "most negative int" cannot be written in C --
+      the rules in the standard (section 6.4.4.1 in C99) will give it
+      an unsigned type, so INT32_MIN (and the most negative member of
+      any larger signed type) must be written via a constant expression.
+   */
+#define INT32_MIN        (-INT32_MAX-1)
+#define INT64_MIN        (-INT64_MAX-1)
 
-/* 7.8.1.2 Minimum-width integer types */
+#define UINT8_MAX         255
+#define UINT16_MAX        65535
+#define UINT32_MAX        4294967295U
+#define UINT64_MAX        18446744073709551615ULL
 
-typedef __INT_LEAST8_TYPE__ int_least8_t;
-typedef __INT_LEAST16_TYPE__ int_least16_t;
-typedef __INT_LEAST32_TYPE__ int_least32_t;
-typedef __INT_LEAST64_TYPE__ int_least64_t;
-typedef __UINT_LEAST8_TYPE__ uint_least8_t;
-typedef __UINT_LEAST16_TYPE__ uint_least16_t;
-typedef __UINT_LEAST32_TYPE__ uint_least32_t;
-typedef __UINT_LEAST64_TYPE__ uint_least64_t;
+/* 7.18.2.2 Limits of minimum-width integer types */
+#define INT_LEAST8_MIN    INT8_MIN
+#define INT_LEAST16_MIN   INT16_MIN
+#define INT_LEAST32_MIN   INT32_MIN
+#define INT_LEAST64_MIN   INT64_MIN
 
-/* 7.8.1.3 Fastest minimum-width integer types */
+#define INT_LEAST8_MAX    INT8_MAX
+#define INT_LEAST16_MAX   INT16_MAX
+#define INT_LEAST32_MAX   INT32_MAX
+#define INT_LEAST64_MAX   INT64_MAX
 
-typedef __INT_FAST8_TYPE__ int_fast8_t;
-typedef __INT_FAST16_TYPE__ int_fast16_t;
-typedef __INT_FAST32_TYPE__ int_fast32_t;
-typedef __INT_FAST64_TYPE__ int_fast64_t;
-typedef __UINT_FAST8_TYPE__ uint_fast8_t;
-typedef __UINT_FAST16_TYPE__ uint_fast16_t;
-typedef __UINT_FAST32_TYPE__ uint_fast32_t;
-typedef __UINT_FAST64_TYPE__ uint_fast64_t;
+#define UINT_LEAST8_MAX   UINT8_MAX
+#define UINT_LEAST16_MAX  UINT16_MAX
+#define UINT_LEAST32_MAX  UINT32_MAX
+#define UINT_LEAST64_MAX  UINT64_MAX
 
-/* 7.8.1.4 Integer types capable of holding object pointers */
+/* 7.18.2.3 Limits of fastest minimum-width integer types */
+#define INT_FAST8_MIN     INT8_MIN
+#define INT_FAST16_MIN    INT16_MIN
+#define INT_FAST32_MIN    INT32_MIN
+#define INT_FAST64_MIN    INT64_MIN
 
-#ifdef __INTPTR_TYPE__
-typedef __INTPTR_TYPE__ intptr_t;
-#endif
-#ifdef __UINTPTR_TYPE__
-typedef __UINTPTR_TYPE__ uintptr_t;
-#endif
+#define INT_FAST8_MAX     INT8_MAX
+#define INT_FAST16_MAX    INT16_MAX
+#define INT_FAST32_MAX    INT32_MAX
+#define INT_FAST64_MAX    INT64_MAX
 
-/* 7.8.1.5 Greatest-width integer types */
+#define UINT_FAST8_MAX    UINT8_MAX
+#define UINT_FAST16_MAX   UINT16_MAX
+#define UINT_FAST32_MAX   UINT32_MAX
+#define UINT_FAST64_MAX   UINT64_MAX
 
-typedef __INTMAX_TYPE__ intmax_t;
-typedef __UINTMAX_TYPE__ uintmax_t;
+/* 7.18.2.4 Limits of integer types capable of holding object pointers */
 
-#if (!defined __cplusplus || __cplusplus >= 201103L \
-     || defined __STDC_LIMIT_MACROS)
-
-/* 7.18.2 Limits of specified-width integer types */
-
-#ifdef __INT8_MAX__
-# undef INT8_MAX
-# define INT8_MAX __INT8_MAX__
-# undef INT8_MIN
-# define INT8_MIN (-INT8_MAX - 1)
-#endif
-#ifdef __UINT8_MAX__
-# undef UINT8_MAX
-# define UINT8_MAX __UINT8_MAX__
-#endif
-#ifdef __INT16_MAX__
-# undef INT16_MAX
-# define INT16_MAX __INT16_MAX__
-# undef INT16_MIN
-# define INT16_MIN (-INT16_MAX - 1)
-#endif
-#ifdef __UINT16_MAX__
-# undef UINT16_MAX
-# define UINT16_MAX __UINT16_MAX__
-#endif
-#ifdef __INT32_MAX__
-# undef INT32_MAX
-# define INT32_MAX __INT32_MAX__
-# undef INT32_MIN
-# define INT32_MIN (-INT32_MAX - 1)
-#endif
-#ifdef __UINT32_MAX__
-# undef UINT32_MAX
-# define UINT32_MAX __UINT32_MAX__
-#endif
-#ifdef __INT64_MAX__
-# undef INT64_MAX
-# define INT64_MAX __INT64_MAX__
-# undef INT64_MIN
-# define INT64_MIN (-INT64_MAX - 1)
-#endif
-#ifdef __UINT64_MAX__
-# undef UINT64_MAX
-# define UINT64_MAX __UINT64_MAX__
+#if __WORDSIZE == 64
+#define INTPTR_MIN      INT64_MIN
+#define INTPTR_MAX      INT64_MAX
+#else
+#define INTPTR_MIN        INT32_MIN
+#define INTPTR_MAX        INT32_MAX
 #endif
 
-#undef INT_LEAST8_MAX
-#define INT_LEAST8_MAX __INT_LEAST8_MAX__
-#undef INT_LEAST8_MIN
-#define INT_LEAST8_MIN (-INT_LEAST8_MAX - 1)
-#undef UINT_LEAST8_MAX
-#define UINT_LEAST8_MAX __UINT_LEAST8_MAX__
-#undef INT_LEAST16_MAX
-#define INT_LEAST16_MAX __INT_LEAST16_MAX__
-#undef INT_LEAST16_MIN
-#define INT_LEAST16_MIN (-INT_LEAST16_MAX - 1)
-#undef UINT_LEAST16_MAX
-#define UINT_LEAST16_MAX __UINT_LEAST16_MAX__
-#undef INT_LEAST32_MAX
-#define INT_LEAST32_MAX __INT_LEAST32_MAX__
-#undef INT_LEAST32_MIN
-#define INT_LEAST32_MIN (-INT_LEAST32_MAX - 1)
-#undef UINT_LEAST32_MAX
-#define UINT_LEAST32_MAX __UINT_LEAST32_MAX__
-#undef INT_LEAST64_MAX
-#define INT_LEAST64_MAX __INT_LEAST64_MAX__
-#undef INT_LEAST64_MIN
-#define INT_LEAST64_MIN (-INT_LEAST64_MAX - 1)
-#undef UINT_LEAST64_MAX
-#define UINT_LEAST64_MAX __UINT_LEAST64_MAX__
-
-#undef INT_FAST8_MAX
-#define INT_FAST8_MAX __INT_FAST8_MAX__
-#undef INT_FAST8_MIN
-#define INT_FAST8_MIN (-INT_FAST8_MAX - 1)
-#undef UINT_FAST8_MAX
-#define UINT_FAST8_MAX __UINT_FAST8_MAX__
-#undef INT_FAST16_MAX
-#define INT_FAST16_MAX __INT_FAST16_MAX__
-#undef INT_FAST16_MIN
-#define INT_FAST16_MIN (-INT_FAST16_MAX - 1)
-#undef UINT_FAST16_MAX
-#define UINT_FAST16_MAX __UINT_FAST16_MAX__
-#undef INT_FAST32_MAX
-#define INT_FAST32_MAX __INT_FAST32_MAX__
-#undef INT_FAST32_MIN
-#define INT_FAST32_MIN (-INT_FAST32_MAX - 1)
-#undef UINT_FAST32_MAX
-#define UINT_FAST32_MAX __UINT_FAST32_MAX__
-#undef INT_FAST64_MAX
-#define INT_FAST64_MAX __INT_FAST64_MAX__
-#undef INT_FAST64_MIN
-#define INT_FAST64_MIN (-INT_FAST64_MAX - 1)
-#undef UINT_FAST64_MAX
-#define UINT_FAST64_MAX __UINT_FAST64_MAX__
-
-#ifdef __INTPTR_MAX__
-# undef INTPTR_MAX
-# define INTPTR_MAX __INTPTR_MAX__
-# undef INTPTR_MIN
-# define INTPTR_MIN (-INTPTR_MAX - 1)
-#endif
-#ifdef __UINTPTR_MAX__
-# undef UINTPTR_MAX
-# define UINTPTR_MAX __UINTPTR_MAX__
+#if __WORDSIZE == 64
+#define UINTPTR_MAX      UINT64_MAX
+#else
+#define UINTPTR_MAX       UINT32_MAX
 #endif
 
-#undef INTMAX_MAX
-#define INTMAX_MAX __INTMAX_MAX__
-#undef INTMAX_MIN
-#define INTMAX_MIN (-INTMAX_MAX - 1)
-#undef UINTMAX_MAX
-#define UINTMAX_MAX __UINTMAX_MAX__
+/* 7.18.2.5 Limits of greatest-width integer types */
+#define INTMAX_MIN        INT64_MIN
+#define INTMAX_MAX        INT64_MAX
 
-/* 7.18.3 Limits of other integer types */
+#define UINTMAX_MAX       UINT64_MAX
 
-#undef PTRDIFF_MAX
-#define PTRDIFF_MAX __PTRDIFF_MAX__
-#undef PTRDIFF_MIN
-#define PTRDIFF_MIN (-PTRDIFF_MAX - 1)
+/* 7.18.3 "Other" */
+#if __WORDSIZE == 64
+#define PTRDIFF_MIN      INT64_MIN
+#define PTRDIFF_MAX      INT64_MAX
+#else
+#define PTRDIFF_MIN       INT32_MIN
+#define PTRDIFF_MAX       INT32_MAX
+#endif
 
-#undef SIG_ATOMIC_MAX
-#define SIG_ATOMIC_MAX __SIG_ATOMIC_MAX__
-#undef SIG_ATOMIC_MIN
-#define SIG_ATOMIC_MIN __SIG_ATOMIC_MIN__
+/* We have no sig_atomic_t yet, so no SIG_ATOMIC_{MIN,MAX}.
+   Should end up being {-127,127} or {0,255} ... or bigger.
+   My bet would be on one of {U}INT32_{MIN,MAX}. */
 
-#undef SIZE_MAX
-#define SIZE_MAX __SIZE_MAX__
+#if __WORDSIZE == 64
+#define SIZE_MAX      UINT64_MAX
+#else
+#define SIZE_MAX          UINT32_MAX
+#endif
 
-#undef WCHAR_MAX
-#define WCHAR_MAX __WCHAR_MAX__
-#undef WCHAR_MIN
-#define WCHAR_MIN __WCHAR_MIN__
+#if defined(__STDC_WANT_LIB_EXT1__) && __STDC_WANT_LIB_EXT1__ >= 1
+#define RSIZE_MAX         (SIZE_MAX >> 1)
+#endif
 
-#undef WINT_MAX
-#define WINT_MAX __WINT_MAX__
-#undef WINT_MIN
-#define WINT_MIN __WINT_MIN__
+#ifndef WCHAR_MAX
+#  ifdef __WCHAR_MAX__
+#    define WCHAR_MAX     __WCHAR_MAX__
+#  else
+#    define WCHAR_MAX     0x7fffffff
+#  endif
+#endif
 
-#endif /* (!defined __cplusplus || __cplusplus >= 201103L
-	   || defined __STDC_LIMIT_MACROS)  */
+/* WCHAR_MIN should be 0 if wchar_t is an unsigned type and
+   (-WCHAR_MAX-1) if wchar_t is a signed type.  Unfortunately,
+   it turns out that -fshort-wchar changes the signedness of
+   the type. */
+#ifndef WCHAR_MIN
+#  if WCHAR_MAX == 0xffff
+#    define WCHAR_MIN       0
+#  else
+#    define WCHAR_MIN       (-WCHAR_MAX-1)
+#  endif
+#endif
 
-#if (!defined __cplusplus || __cplusplus >= 201103L \
-     || defined __STDC_CONSTANT_MACROS)
+#define WINT_MIN      INT32_MIN
+#define WINT_MAX      INT32_MAX
 
-#undef INT8_C
-#define INT8_C(c) __INT8_C(c)
-#undef INT16_C
-#define INT16_C(c) __INT16_C(c)
-#undef INT32_C
-#define INT32_C(c) __INT32_C(c)
-#undef INT64_C
-#define INT64_C(c) __INT64_C(c)
-#undef UINT8_C
-#define UINT8_C(c) __UINT8_C(c)
-#undef UINT16_C
-#define UINT16_C(c) __UINT16_C(c)
-#undef UINT32_C
-#define UINT32_C(c) __UINT32_C(c)
-#undef UINT64_C
-#define UINT64_C(c) __UINT64_C(c)
-#undef INTMAX_C
-#define INTMAX_C(c) __INTMAX_C(c)
-#undef UINTMAX_C
-#define UINTMAX_C(c) __UINTMAX_C(c)
+#define SIG_ATOMIC_MIN      INT32_MIN
+#define SIG_ATOMIC_MAX      INT32_MAX
 
-#endif /* (!defined __cplusplus || __cplusplus >= 201103L
-	   || defined __STDC_CONSTANT_MACROS) */
+/* 7.18.4 Macros for integer constants */
+#define INT8_C(v)    (v)
+#define INT16_C(v)   (v)
+#define INT32_C(v)   (v)
+#define INT64_C(v)   (v ## LL)
 
-#endif /* _GCC_STDINT_H */
+#define UINT8_C(v)   (v ## U)
+#define UINT16_C(v)  (v ## U)
+#define UINT32_C(v)  (v ## U)
+#define UINT64_C(v)  (v ## ULL)
+
+#define INTMAX_C(v)  (v ## LL)
+#define UINTMAX_C(v) (v ## ULL)
+
+#endif

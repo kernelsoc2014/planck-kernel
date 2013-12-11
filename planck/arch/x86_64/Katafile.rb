@@ -1,9 +1,8 @@
-import 'boot'
 
 project 'kernel/arch' do
     arch = $configuration.platform == 'x86_64' ? 'x64' : 'x86'
     dirs = [
-        'boot', "boot/#{arch}"
+        'boot', "boot/#{arch}",
         'kernel', "kernel/#{arch}"
     ]
 
@@ -15,7 +14,7 @@ project 'kernel/arch' do
     cxx_build = build :target_cxx, cxx_files, $kernel.cxx_rules
     as_build = build :target_as, as_files, $kernel.as_rules
 
-    lds = build :target_cpp, files('kernel/planck_kernel.lds'), $basic_rules do
+    lds = build :target_cpp, files('kernel/planck_kernel.lds'), $kernel.basic_rules do
         flags '-P -x assembler-with-cpp'
     end
 
