@@ -16,7 +16,7 @@ if not [ "Checked", "Free" ].include? $configuration.configuration then
     abort "Invalid configuration #{$configuration.configuration}."
 end
 
-if not [ "x86", "x86_64", "arm" ].include? $configuration.platform then
+if not [ "x86_64", "arm" ].include? $configuration.platform then
     abort "Invalid platform #{$configuration.platform}."
 end
 

@@ -48,24 +48,35 @@
 
 #define NULL_SEG       0
 
-#define KERNEL64_CS    0x08
-#define SYSENTER_CS    0x0b
-#define KERNEL64_SS    0x10
-#define USER_CS        0x1b
-#define USER_DS        0x23
-#define USER64_CS      0x2b
-#define USER64_DS      USER_DS
-#define KERNEL_LDT     0x30
-#define KERNEL_TSS     0x40
-#define KERNEL32_CS    0x50
-#define USER_LDT       0x58
-#define KERNEL_DS      0x68
+#define KERNEL64_CS    (0x08 | 0)
+#define KERNEL_DS      (0x10 | 0)
+#define USER32_CS      (0x18 | 3)
+#define USER32_DS      (0x20 | 3)
+#define USER64_CS      (0x28 | 3)
+#define USER64_DS      USER32_DS
+#define KERNEL_TSS     (0x38 | 0)
 
 #ifndef __ASSEMBLER__
 
 #include <stdint.h>
+#include <planck/compiler.h>
 
-struct real_descriptor {
+#pragma pack(1)
+
+typedef struct
+{
+    uint16_t size;
+    uint32_t address;
+} descriptor_descriptor_t;
+
+typedef struct
+{
+    uint16_t size;
+    uint64_t address;
+} descriptor_descriptor64_t;
+
+typedef struct
+{
     uint32_t limit_low : 16;
     uint32_t base_low : 16;
     uint32_t base_med : 8;
@@ -73,17 +84,45 @@ struct real_descriptor {
     uint32_t limit_high : 4;
     uint32_t granularity : 4;
     uint32_t base_high : 8;
-};
+} gdt_descriptor_t;
 
-struct real_gate {
+typedef struct
+{
+    uint32_t limit_low : 16;
+    uint32_t base_low : 16;
+    uint32_t base_med : 8;
+    uint32_t access : 8;
+    uint32_t limit_high : 4;
+    uint32_t granularity :4 ;
+    uint32_t base_high : 8;
+    uint32_t base_top : 32;
+    uint32_t reserved : 32;
+} gdt_descriptor64_t;
+
+typedef struct
+{
     uint32_t offset_low : 16;
     uint32_t selector : 16;
     uint32_t word_count : 8;
     uint32_t access : 8;
     uint32_t offset_high : 16;
-};
+} idt_gate_t;
 
-#define MAKE_REAL_DESCRIPTOR(base, lim, gran, acc) { \
+typedef struct
+{
+    uint32_t offset_low16 : 16;
+    uint32_t selector16 : 16;
+    uint32_t IST : 3;
+    uint32_t zeroes5 : 5;
+    uint32_t access8 : 8;
+    uint32_t offset_high16 : 16;
+    uint32_t offset_top32 : 32;
+    uint32_t reserved32 : 32;
+} idt_gate64_t;
+
+#pragma pack(0)
+
+#define MAKE_GDT_DESCRIPTOR(base, lim, gran, acc) { \
     .limit_low = lim & 0xffff, \
     .limit_high = (lim >> 16) & 0xf, \
     .base_low = base & 0xffff, \
@@ -92,5 +131,11 @@ struct real_gate {
     .access = acc, \
     .granularity = gran \
 }
+
+__BEGIN_DECLS
+
+void segment_init();
+
+__END_DECLS
 
 #endif

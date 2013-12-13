@@ -28,3 +28,6 @@ typedef unsigned char       u_int8_t;
 typedef unsigned short      u_int16_t;
 typedef unsigned int        u_int32_t;
 typedef unsigned long long  u_int64_t;
+
+typedef int64_t intptr_t;
+typedef u_int64_t uintptr_t;

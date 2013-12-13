@@ -1,10 +1,6 @@
 
 project 'kernel/arch' do
-    arch = $configuration.platform == 'x86_64' ? 'x64' : 'x86'
-    dirs = [
-        'boot', "boot/#{arch}",
-        'kernel', "kernel/#{arch}"
-    ]
+    dirs = [ 'boot', 'kernel' ]
 
     cc_files = mglob dirs, '*.c'
     cxx_files = mglob dirs, '*.cpp'

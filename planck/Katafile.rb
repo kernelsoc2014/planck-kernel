@@ -13,11 +13,15 @@ $kernel.as_rules = Configuration.new $kernel.as_rules do
 end
 
 $kernel.cc_rules = Configuration.new $kernel.cc_rules do
-    flags '-Wall -Wextra -std=c99'
+    flags '-Wall'
 end
 
 $kernel.cxx_rules = Configuration.new $kernel.cc_rules, $kernel.cxx_rules do
     flags '-fno-exceptions -fno-rtti'
+end
+
+$kernel.cc_rules = Configuration.new $kernel.cc_rules do
+    flags '-std=c99'
 end
 
 import 'arch/' + $kernel.arch_dir
