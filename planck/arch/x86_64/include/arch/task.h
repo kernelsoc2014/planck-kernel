@@ -1,9 +1,9 @@
 #pragma once
 
+#ifndef __ASSEMBLER__
+
 #include <stdint.h>
 #include <planck/compiler.h>
-
-#ifndef __ASSEMBLER__
 
 #pragma pack(4)
 

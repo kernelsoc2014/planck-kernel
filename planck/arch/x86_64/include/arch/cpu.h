@@ -353,6 +353,16 @@ static inline void lidt(uintptr_t *desc)
     __asm__ volatile("lidt %0" : : "m" (*desc));
 }
 
+static inline void cli()
+{
+    __asm__ volatile("cli");
+}
+
+static inline void sti()
+{
+    __asm__ volatile("sti");
+}
+
 static inline void swapgs(void)
 {
     __asm__ volatile("swapgs");

@@ -54,7 +54,7 @@
 #define USER32_DS      (0x20 | 3)
 #define USER64_CS      (0x28 | 3)
 #define USER64_DS      USER32_DS
-#define KERNEL_TSS     (0x38 | 0)
+#define KERNEL_TSS     (0x30 | 0)
 
 #ifndef __ASSEMBLER__
 
@@ -110,17 +110,17 @@ typedef struct
 
 typedef struct
 {
-    uint32_t offset_low16 : 16;
-    uint32_t selector16 : 16;
+    uint32_t offset_low : 16;
+    uint32_t selector : 16;
     uint32_t IST : 3;
-    uint32_t zeroes5 : 5;
-    uint32_t access8 : 8;
-    uint32_t offset_high16 : 16;
-    uint32_t offset_top32 : 32;
-    uint32_t reserved32 : 32;
+    uint32_t zeroes : 5;
+    uint32_t access : 8;
+    uint32_t offset_high : 16;
+    uint32_t offset_top : 32;
+    uint32_t reserved : 32;
 } idt_gate64_t;
 
-#pragma pack(0)
+#pragma pack()
 
 #define MAKE_GDT_DESCRIPTOR(base, lim, gran, acc) { \
     .limit_low = lim & 0xffff, \
