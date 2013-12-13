@@ -9,25 +9,68 @@
 
 typedef struct
 {
-    uint32_t gs, fs, es, ds;
-    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
-    uint16_t trap_number, cpu;
-    uint32_t error;
-    uint32_t eip, cs, efl, uesp, ss;
+    uint32_t gs;
+    uint32_t fs;
+    uint32_t es;
+    uint32_t ds;
+    uint32_t edi;
+    uint32_t esi;
+    uint32_t ebp;
+    uint32_t cr2;
+    uint32_t ebx;
+    uint32_t edx;
+    uint32_t ecx;
+    uint32_t eax;
+    uint16_t trapno;
+    uint16_t cpu;
+    uint32_t err;
+    uint32_t eip;
+    uint32_t cs;
+    uint32_t efl;
+    uint32_t uesp;
+    uint32_t ss;
 } task_state32_t;
 
 typedef struct
 {
-    uint64_t rdi, rsi, rdx, r10, r8, r9;
-    uint64_t v_arg6, v_arg7, v_arg8;
-    uint64_t cr2;
-    uint64_t r15, r14, r13, r12, r11;
-    uint64_t rbp, rbx, rcx, rax;
-    uint32_t gs, fs;
-    uint16_t trap_number, cpu;
+    uint16_t trapno;
+    uint16_t cpu;
     uint32_t _pad;
     uint64_t trapfn;
-    uint64_t err, rip, cs, rflags, rsp, ss;
+    uint64_t err;
+    uint64_t rip;
+    uint64_t cs;
+    uint64_t rflags;
+    uint64_t rsp;
+    uint64_t ss;
+} interrupt_stack_frame_t;
+
+typedef struct
+{
+    uint64_t rdi;
+    uint64_t rsi;
+    uint64_t rdx;
+    uint64_t r10;
+    uint64_t r8;
+    uint64_t r9;
+    uint64_t v_arg6;
+    uint64_t v_arg7;
+    uint64_t v_arg8;
+    uint64_t cr2;
+    uint64_t r15;
+    uint64_t r14;
+    uint64_t r13;
+    uint64_t r12;
+    uint64_t r11;
+    uint64_t rbp;
+    uint64_t rbx;
+    uint64_t rcx;
+    uint64_t rax;
+
+    uint32_t gs;
+    uint32_t fs;
+
+    interrupt_stack_frame_t isf;
 } task_state64_t;
 
 typedef struct
