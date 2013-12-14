@@ -1,5 +1,8 @@
 #pragma once
 
+#define X86_SAVED_STATE32      0
+#define X86_SAVED_STATE64      1
+
 #ifndef __ASSEMBLER__
 
 #include <stdint.h>
@@ -29,7 +32,7 @@ typedef struct
     uint32_t efl;
     uint32_t uesp;
     uint32_t ss;
-} task_state32_t;
+} x86_saved_state32_t;
 
 typedef struct
 {
@@ -43,7 +46,7 @@ typedef struct
     uint64_t rflags;
     uint64_t rsp;
     uint64_t ss;
-} interrupt_stack_frame_t;
+} x86_64_intr_stack_frame;
 
 typedef struct
 {
@@ -70,8 +73,23 @@ typedef struct
     uint32_t gs;
     uint32_t fs;
 
-    interrupt_stack_frame_t isf;
-} task_state64_t;
+    x86_64_intr_stack_frame isf;
+} x86_saved_state64_t;
+
+typedef struct
+{
+    uint32_t flavor;
+    uint32_t _pad_for_16byte_alignment[3];
+
+    union
+    {
+        x86_saved_state32_t ss_32;
+        x86_saved_state64_t ss_64;
+    } uss;
+} x86_saved_state_t;
+
+#define ss_32 uss.ss_32
+#define ss_64 uss.ss_64
 
 typedef struct
 {

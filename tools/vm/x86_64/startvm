@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export VMDIR=$( cd "$( dirname "$0" )" && pwd )
+bochs -q -f $VMDIR/bochsrc.bxrc
+

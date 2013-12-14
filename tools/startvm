@@ -1,5 +1,0 @@
-#!/bin/bash
-
-BUILDDIR=build/$PLANCK_PLATFORM/$PLANCK_CONFIGURATION
-
-qemu-system-x86_64 -cpu Westmere -m 128 -hda tools/grub.img -hdb fat:$BUILDDIR $*
