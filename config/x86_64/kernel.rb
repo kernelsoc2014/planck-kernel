@@ -1,8 +1,13 @@
 $kernel.arch_dir = 'x86_64'
+$kernel.includes = [ file('arch/x86_64/include') ]
+$kernel.defines = {
+    :__x86_64__ => 1,
+    :_PLANCK_KERNEL => 1
+}
 
 $kernel.basic_rules = Configuration.new $kernel.basic_rules do
-    includes file('arch/x86_64/include')
-    defines :__x86_64__ => 1
+    includes $kernel.includes
+    defines $kernel.defines
 end
 
 $kernel.cc_rules = Configuration.new $kernel.basic_rules, $kernel.cc_rules do
@@ -22,3 +27,5 @@ end
 $kernel.as_rules = Configuration.new $kernel.basic_rules, $kernel.as_rules do
     flags '-m64'
 end
+
+import '../acpica'
