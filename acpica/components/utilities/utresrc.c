@@ -125,7 +125,7 @@
         ACPI_MODULE_NAME    ("utresrc")
 
 
-#if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUGGER)
+#if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUGGER) || defined(ACPI_DEBUG_OUTPUT)
 
 /*
  * Strings used to decode resource descriptors.

@@ -38,234 +38,387 @@ int sprintf(char* str, const char* format, ...) {
 	return n;
 }
 
-int vsnprintf(char* str, size_t size, const char* format, va_list ap) {
-	// TODO: 'size' is not handled
-	// TODO: 'e', 'f', 'g', 'n' specifiers to do
-	// TODO: function doesn't return the number of printed characters
+#define ZEROPAD	1
+#define SIGN	2
+#define PLUS	4
+#define SPACE	8
+#define LEFT	16
+#define SPECIAL	32
+#define LARGE	64
 
-	if (size == 0)
-		return 0;
+static size_t strnlen(const char *s, size_t count)
+{
+  const char *sc;
 
-	// we loop through each character of the format
-	while (*format != '\0' && size > 1) {
-		// first we handle the most common case: a normal character
-		if (*format != '%') {
-			*str++ = *format++;
-			continue;
-		}
+  for(sc = s; count-- && *sc != '\0'; ++sc) ;
 
-		// then we check if format is "%%"
-		format++;
-		if (*format == '%') {
-			*str++ = '%';
-			format++;
-			continue;
-		}
+  return sc - s;
+}
 
-		// now we are sure we are in a special case
-		// what we do is that we store flags, width, precision, length in variables
-		bool sharpFlag = false;
-		bool alignLeft = false;
-		bool alwaysSign = false;
-		bool noSign = false;
-		bool padding = ' ';
-		int minimumWidth = 0;
-		int precision = 1;
-		bool numberMustBeShort = false;
-		bool numberMustBeLong = false;
-		bool unsignedNumber = false;
-		bool capitalLetters = false;
-		bool octal = false;
-		bool hexadecimal = false;
-		bool pointer = false;
-		bool tagFinished = false;
+static int skip_atoi(const char **s)
+{
+  int i = 0;
 
-		// then we loop (and we modify variables) until we find a specifier
-		do {
+  while(isdigit(**s))
+    i = i * 10 + *((*s)++) - '0';
 
-			switch (*format) {
-				// flags
-				case '-': alignLeft = true; 		format++; break;
-				case '+': alwaysSign = true;		format++; break;
-				case ' ': noSign = true;		format++; break;
-				case '0': padding = '0';			format++; break;
-				case '#': sharpFlag = true;		format++; break;
+  return i;
+}
 
-				// width
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':		// width cannot start with 0 or it would be a flag
-				case '6':
-				case '7':
-				case '8':
-				case '9':
-					minimumWidth = atoi(format);
-					while (*format >= '0' && *format <= '9') format++;
-					break;
-				case '*':
-					minimumWidth = va_arg(ap, int);
-					format++;
-					break;
+static char *number(char *str, long num, int base, int size, int
+                    precision, int type, size_t *max_size)
+{
+  char c,sign,tmp[66] = {'\0'};
+  const char *digits="0123456789abcdefghijklmnopqrstuvwxyz";
+  int i;
+  size_t msize;
 
-				// precision
-				case '.':
-					format++;
-					if (*format == '*') {
-						precision = va_arg(ap, int);
-						format++;
-					} else if (*format >= '0' && *format <= '9') {
-						precision = atoi(format);
-						while (*format >= '0' && *format <= '9') format++;
-					} else {
-						precision = 0;		// this behavior is standardized
-					}
-					break;
+  msize = *max_size;
 
-				// length
-				case 'h': numberMustBeShort = true;	format++; break;
-				case 'l':
-				case 'L': numberMustBeLong = true;	format++; break;
+  if(type & LARGE)
+    digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  if(type & LEFT)
+    type &= ~ZEROPAD;
+  if(base < 2 || base > 36)
+    return 0;
 
-				// specifiers
+  c = (type & ZEROPAD) ? '0' : ' ';
+  sign = 0;
+  if(type & SIGN) {
+    if(num < 0) {
+      sign = '-';
+      num = -num;
+      size--;
+    } else if(type & PLUS) {
+      sign = '+';
+      size--;
+    } else if(type & SPACE) {
+      sign = ' ';
+      size--;
+    }
+  }
 
+  if(type & SPECIAL) {
+    if(base == 16)
+      size -= 2;
+    else if(base == 8)
+      size--;
+  }
 
-				//	strings
-				case 's': {
-					char* nStr = va_arg(ap, char*);
-					size_t len = strlen(nStr);
+  i = 0;
+  if(num == 0)
+    tmp[i++] = '0';
+  else while(num != 0) {
+  	tmp[i++] = digits[((unsigned long) num) % (unsigned) base];
+         	num /= base;
+  }
+  if(i > precision)
+    precision = i;
 
-					if (!alignLeft && len < minimumWidth) {
-						while (len++ < minimumWidth)
-							*str++ = padding;
-					}
+  size -= precision;
+  if(!(type & (ZEROPAD+LEFT)))
+    while(size-- > 0 && msize) {
+      *str++ = ' ';
+      msize--;
+    }
 
-					while (*nStr)
-						*str++ = *nStr++;
+  if(sign && msize)
+    { *str++ = sign; msize--; }
 
-					if (alignLeft && len < minimumWidth) {
-						while (len++ < minimumWidth)
-							*str++ = padding;
-					}
+  if(msize) {
+    if(type & SPECIAL) {
+      if(base == 8)
+        { *str++ = '0'; msize--; }
+      else if(base == 16) {
+        *str++ = '0'; msize--;
+        if(msize)
+          { *str++ = digits[33]; msize--; }
+      }
+    }
+  }
 
-					format++;
-					tagFinished = true;
-					break;
-				}
+  if(!(type & LEFT))
+    while(size-- > 0 && msize)
+      { *str++ = c; msize--; }
 
+  while(i < precision-- && msize)
+    { *str++ = '0'; msize--; }
 
+  while(i-- > 0 && msize)
+    { *str++ = tmp[i]; msize--; }
 
-				// 	characters
-				case 'c': {
-					char toWrite;
-					/*if (numberMustBeLong)		toWrite = (char)va_arg(ap, wchar_t);
-					else					*/toWrite = (char)va_arg(ap, int);
+  while(size-- > 0 && msize)
+    { *str++ = ' '; msize--; }
 
-					if (!alignLeft) {
-						for (; minimumWidth > 1; minimumWidth--)
-							*str++ = padding;
-					}
+  *max_size = msize;
+  return str;
+}
 
-					*str++ = toWrite;
+int vsnprintf(char* buf, size_t size, const char* fmt, va_list args) {
+	int len;
+  unsigned long num;
+  int i, base;
+  char *str;
+  const char *s;
 
-					if (alignLeft) {
-						for (; minimumWidth > 1; minimumWidth--)
-							*str++ = padding;
-					}
+  int flags;
+  int dotflag;
 
-					format++;
-					tagFinished = true;
-					break;
-				}
+  int field_width;
+  int precision;
 
+  int qualifier;
 
-				// 	numbers
-				case 'o':	octal = true;
-				case 'p':	pointer = true;
-				case 'X':	capitalLetters = true;
-				case 'x':	hexadecimal = true;
-				case 'u':	unsignedNumber = true;
-				case 'd':
-				case 'i': {
-					// first we handle problems with our switch-case
-					if (octal) { pointer = false; hexadecimal = false; unsignedNumber = false; }
+  size--;
+  for(str = buf; *fmt && size; ++fmt) {
+    if(*fmt != '%') {
+      *str++ = *fmt;
+      size--;
+      continue;
+    }
 
-					// then we retreive the value to write
-					unsigned long int toWrite;
-					if (numberMustBeLong)			toWrite = va_arg(ap, long int);
-					else if (numberMustBeShort)		toWrite = (short int)va_arg(ap, int);
-					else if (pointer)				toWrite = (unsigned long int)va_arg(ap, void*);
-					else						toWrite = va_arg(ap, int);
+    flags = 0;
+    dotflag = 0;
+    repeat:
+      ++fmt;
+      switch(*fmt) {
+        case '-': flags |= LEFT; goto repeat;
+        case '+': flags |= PLUS; goto repeat;
+        case ' ': flags |= SPACE; goto repeat;
+        case '#': flags |= SPECIAL; goto repeat;
+        case '0': flags |= ZEROPAD; goto repeat;
+      }
 
-					// handling sign
-					if (!noSign) {
-						bool positive = (unsignedNumber || (((signed)toWrite) > 0));
-						if (alwaysSign || !positive)
-							*str++ = (positive ? '+' : '-');
-						if (!unsignedNumber && (((signed)toWrite) < 0))
-							toWrite = -((signed)toWrite);
-					}
+      field_width = -1;
+      if(isdigit(*fmt))
+        field_width = skip_atoi(&fmt);
+      else if(*fmt == '*') {
+        ++fmt;
+        field_width = va_arg(args,int);
+        if(field_width < 0) {
+          field_width = - field_width;
+          flags |= LEFT;
+        }
+      }
 
-					if (sharpFlag && toWrite != 0) {
-						if (octal || hexadecimal)
-							*str++ = '0';
-						if (hexadecimal) {
-							if (capitalLetters)	*str++ = 'X';
-							else				*str++ = 'x';
-						}
-					}
+      precision = -1;
+      if(*fmt == '.') {
+	dotflag++;
+        ++fmt;
+        if(isdigit(*fmt))
+          precision = skip_atoi(&fmt);
+        else if(*fmt == '*') {
+          ++fmt;
+          precision = va_arg(args,int);
+        }
+	/* NB: the default precision value is conversion dependent */
+      }
 
-					// writing number
-					int digitSwitch = 10;
-					if (hexadecimal)	digitSwitch = 16;
-					else if (octal)	digitSwitch = 8;
+      qualifier = -1;
+      if(*fmt == 'h' || *fmt == 'l' || *fmt == 'L') {
+        qualifier = *fmt;
+        ++fmt;
+      }
 
-					// this variable will be usefull
-					char* baseStr = str;
+      base = 10;
+      switch(*fmt) {
+      case 'c':
+        if(!(flags & LEFT))
+          while(--field_width > 0 && size)
+            { *str++ = ' '; size--; }
+        if(size)
+          { *str++ = (unsigned char)va_arg(args,int); size--; }
+        while(--field_width > 0 && size)
+          { *str++ = ' '; size--; }
+        continue;
+      case 's':
+        if ( dotflag && precision < 0 )
+          precision = 0;
+        s = va_arg(args,char*);
+        if(!s)
+          s = "(null)";
 
-					int numDigits = 0;
-					do {
-						if (numDigits)
-							memmove(baseStr + 1, baseStr, numDigits * sizeof(char));
-						int modResult = toWrite % digitSwitch;
-						if (modResult < 10)	{	*baseStr = '0' + modResult;			str++;	}
-						else if (capitalLetters)	{	*baseStr = 'A' + (modResult - 10);		str++;	}
-						else				{	*baseStr = 'a' + (modResult - 10);		str++;	}
-						toWrite /= digitSwitch;
-						numDigits++;
-					} while (toWrite != 0);
+        len = strnlen(s, precision);
 
-					if (numDigits < minimumWidth) {
-						minimumWidth -= numDigits;
-						if (alignLeft) {
-							for (; minimumWidth > 0; minimumWidth--)
-								*str++ = padding;
-						} else {
-							memmove(baseStr + minimumWidth * sizeof(char), baseStr, numDigits * sizeof(char));
-							memset(baseStr, padding, minimumWidth * sizeof(char));
-							str += minimumWidth;
-						}
-					}
+        if(!(flags & LEFT))
+          while(len < field_width-- && size) {
+            *str++ = ' ';
+            size--;
+          }
 
-					// finished
-					format++;
-					tagFinished = true;
-					break;
-				}
+        for(i = 0; i < len && size; ++i) {
+          *str++ = *s++;
+          size--;
+        }
 
-				default:
-					format++;
-					tagFinished = true;
-					break;
+	while(len < field_width-- && size) {
+          *str++ = ' ';
+          size--;
+        }
 
+        continue;
+
+      case 'p':
+        if ( dotflag && precision < 0 )
+          precision = 0;
+        if(field_width == -1) {
+          field_width = 2 * sizeof(void*);
+          flags |= ZEROPAD;
+        }
+        str = number(str,
+                  (unsigned long)va_arg(args,void*),16,
+                  field_width, precision, flags, &size);
+        continue;
+
+      case 'n':
+        if(qualifier == 'l') {
+          long *ip = va_arg(args,long*);
+          *ip = (str - buf);
+        } else {
+          int *ip = va_arg(args,int*);
+          *ip = (str - buf);
+        }
+        continue;
+
+      case 'o':
+        base = 8;
+        break;
+
+      case 'X':
+        flags |= LARGE;
+      case 'x':
+        base = 16;
+        break;
+
+      case 'd':
+      case 'i':
+        flags |= SIGN;
+      case 'u':
+        break;
+
+# if defined(HAVE_FCONVERT) || defined(HAVE_FCVT)
+      case 'f':
+	{
+		double	dval;
+		int	ndigit, decpt, sign;
+		char	cvtbuf[DECIMAL_STRING_LENGTH] = {'\0'};
+		char	*cbp;
+
+		/* Default FP precision */
+		if ( dotflag && precision < 0 )
+			precision = 6;
+		/* Let's not press our luck too far */
+		ndigit = precision < 16 ? precision : 16;
+
+		dval = va_arg(args, double);
+
+		/*
+		** If available fconvert() is preferred, but fcvt() is
+		** more widely available.  It is included in 4.3BSD,
+		** the SUS1 and SUS2 standards, Gnu libc.
+		*/
+#  if defined(HAVE_FCONVERT)
+		cbp = fconvert(dval, ndigit, &decpt, &sign, cvtbuf);
+#  elif defined(HAVE_FCVT)
+		cbp = fcvt(dval, ndigit, &decpt, &sign);
+		sstrncpy(cvtbuf, cbp, sizeof cvtbuf);
+		cbp = cvtbuf;
+#  endif
+
+		/* XXX Ought to honor field_width, left/right justification */
+
+		/* Result could be "NaN" or "Inf" */
+		if ( ! isdigit(*cbp) ) {
+			for ( i = 0 ; *cbp != '\0' && size > 0 ; i++ ) {
+				*str++ = *cbp++; size--;
 			}
-		} while (!tagFinished);
+			continue;
+		}
+
+		if ( size > 0 ) {
+			if ( sign ) {
+				*str++ = '-'; size--;
+			}
+			else if ( flags & PLUS ) {
+				*str++ = '+'; size--;
+			}
+			else if ( flags & SPACE ) {
+				*str++ = ' '; size--;
+			}
+		}
+
+		/* Leading zeros, if needed */
+		if ( decpt <= 0 && size > 0 ) {
+			/* Prepend '0' */
+			*str++ = '0'; size--;
+		}
+		if ( decpt < 0 && size > 0 ) {
+			/* Prepend '.' */
+			*str++ = '.'; size--;
+			for ( i = decpt ; i < 0 && size > 0 ; i++ ) {
+				*str++ = '0'; size--;
+			}
+		}
+		/* Significant digits */
+		for ( i = 0 ; size > 0 ; i++ ) {
+			if ( i == decpt ) {
+				if ( *cbp != '\0' ) {
+					*str++ = '.'; size--;
+					if ( size <= 0 )
+						break;
+				}
+				else {
+					/* Tack on "." or ".0"??? */
+					break;
+				}
+			}
+			if ( *cbp != '\0' ) {
+				*str++ = *cbp++; size--;
+			}
+			else if ( i < decpt ) {
+				*str++ = '0'; size--;
+			}
+			else {
+				/* Tack on "." or ".0"??? */
+				break;
+			}
+		}
 	}
+	continue;
+	/* break; */
+# endif /* HAVE_FCONVERT || HAVE_FCVT */
 
-	*str = '\0';
+      default:
+        if(*fmt != '%')
+          *str++ = '%';
+        if(*fmt && size)
+          { *str++ = *fmt; size--; }
+        else
+          --fmt;
 
-	return 1;
+        continue;
+      }
+
+      if(qualifier == 'l')
+        num = va_arg(args,unsigned long);
+      else if(qualifier == 'h') {
+        if(flags & SIGN)
+          num = va_arg(args,short);
+        else
+          num = va_arg(args,unsigned short);
+      } else if(flags & SIGN)
+        num = va_arg(args,int);
+      else
+        num = va_arg(args, unsigned int);
+
+      if ( dotflag && precision < 0 )
+        precision = 0;
+
+      str = number(str,num,base,field_width,precision,flags,&size);
+  }
+
+  *str = '\0';
+  return str - buf;
 }
 
 int vsprintf(char* str, const char* format, va_list ap) {

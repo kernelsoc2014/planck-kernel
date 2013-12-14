@@ -1,6 +1,6 @@
 
 project 'kernel/arch' do
-    dirs = [ 'boot', 'kernel' ]
+    dirs = [ 'boot', 'acpica', 'kernel' ]
 
     gensym_out = build :gensym, glob('gensym/*.c'), $kernel.cc_rules do
         output file('include', :projectbuild)

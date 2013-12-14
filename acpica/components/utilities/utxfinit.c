@@ -147,7 +147,6 @@ AcpiInitializeSubsystem (
 {
     ACPI_STATUS             Status;
 
-
     ACPI_FUNCTION_TRACE (AcpiInitializeSubsystem);
 
 

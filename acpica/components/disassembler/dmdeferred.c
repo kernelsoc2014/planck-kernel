@@ -251,8 +251,8 @@ AcpiDmDeferredParse (
         return_ACPI_STATUS (AE_OK);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing deferred opcode %s [%4.4s]\n",
-        Op->Common.AmlOpName, (char *) &Op->Named.Name));
+    //ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing deferred opcode %s [%4.4s]\n",
+    //    Op->Common.AmlOpName, (char *) &Op->Named.Name));
 
     /* Need a new walk state to parse the AML */
 

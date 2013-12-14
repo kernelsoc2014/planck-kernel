@@ -2,6 +2,8 @@
 
 #include "acgcc.h"
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdarg.h>
 
 #define ACPI_MACHINE_WIDTH 64
 
@@ -10,7 +12,6 @@
 
 #define ACPI_UINTPTR_T      uintptr_t
 
-#define ACPI_USE_DO_WHILE_0
 #define ACPI_USE_LOCAL_CACHE
 #define ACPI_USE_NATIVE_DIVIDE
 

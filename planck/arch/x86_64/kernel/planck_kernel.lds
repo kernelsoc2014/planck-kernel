@@ -4,18 +4,6 @@
 OUTPUT_FORMAT(elf64-x86-64)
 OUTPUT_ARCH(i386:x86-64)
 ENTRY(startup_64)
-/*
-PHDRS {
-    text PT_LOAD FLAGS(5);
-    data PT_LOAD FLAGS(6);
-    init PT_LOAD FLAGS(7);
-}*/
-
-/*#undef KERNEL_VIRTUAL_ADDRESS
-#define KERNEL_VIRTUAL_ADDRESS 0
-
-#undef KERNEL_START
-#define KERNEL_START 0x100000*/
 
 SECTIONS
 {
@@ -31,9 +19,9 @@ SECTIONS
 
     .data ALIGN(PAGE_SIZE) : AT(ADDR(.data) - KERNEL_VIRTUAL_ADDRESS)
     {
-        __rodata_base = .;
+        __data_base = .;
         *(.data)
-        __rodata_limit = .;
+        __data_limit = .;
     }
 
     .rodata ALIGN(PAGE_SIZE) : AT(ADDR(.rodata) - KERNEL_VIRTUAL_ADDRESS)

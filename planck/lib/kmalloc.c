@@ -4,6 +4,11 @@
 
 extern uint32_t *__brk_base, *__brk_limit;
 
+void kmalloc_initialize()
+{
+    *__brk_base = 0;
+}
+
 void *malloc(size_t size)
 {
     void *ptr = ((uint8_t*)__brk_base) + *__brk_base + 4;

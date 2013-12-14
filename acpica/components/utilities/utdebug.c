@@ -387,7 +387,6 @@ AcpiUtTrace (
     const char              *ModuleName,
     UINT32                  ComponentId)
 {
-
     AcpiGbl_NestingLevel++;
     AcpiUtTrackStackPtr ();
 
