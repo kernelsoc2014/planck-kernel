@@ -1,5 +1,5 @@
 
-project 'planck' do
+project 'planck/kernel' do
     dirs = [ '.' ]
 
     cc_files = mglob dirs, '*.c'

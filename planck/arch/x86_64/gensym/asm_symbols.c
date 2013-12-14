@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stddef.h>
 #include <arch/cpu.h>
 #include <arch/page.h>
 #include <arch/segment.h>

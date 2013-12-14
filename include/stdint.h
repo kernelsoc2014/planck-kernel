@@ -1,191 +1,165 @@
-#pragma once
+/*
 
-#ifndef __KERNEL__
-#include_next <stdint.h>
+   Copyright 2009 Pierre KRIEGER
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   
+*/
+
+#ifndef _STDC_STDINT_H_
+#define _STDC_STDINT_H_
+
+#include <machine/_sizes.h>
+
+
+#if	__CHAR_BIT__ == 8
+typedef char					int8_t;
+typedef unsigned char			uint8_t;
+#endif
+
+#if	__CHAR_BIT__ >= 8
+typedef char					int_least8_t;
+typedef unsigned char			uint_least8_t;
 #else
-
-#include <arch/types.h>
-
-typedef u_int8_t              uint8_t;   /* u_int8_t is defined in <arch/types.h> */
-typedef u_int16_t            uint16_t;   /* u_int16_t is defined in <arch/types.h> */
-typedef u_int32_t            uint32_t;   /* u_int32_t is defined in <arch/types.h> */
-typedef u_int64_t            uint64_t;   /* u_int64_t is defined in <arch/types.h> */
+#error Could not determine int_least8_t and uint_least8_t
+#endif
 
 
-/* 7.18.1.2 Minimum-width integer types */
-typedef int8_t           int_least8_t;
-typedef int16_t         int_least16_t;
-typedef int32_t         int_least32_t;
-typedef int64_t         int_least64_t;
-typedef uint8_t         uint_least8_t;
-typedef uint16_t       uint_least16_t;
-typedef uint32_t       uint_least32_t;
-typedef uint64_t       uint_least64_t;
-
-
-/* 7.18.1.3 Fastest-width integer types */
-typedef int8_t            int_fast8_t;
-typedef int16_t          int_fast16_t;
-typedef int32_t          int_fast32_t;
-typedef int64_t          int_fast64_t;
-typedef uint8_t          uint_fast8_t;
-typedef uint16_t        uint_fast16_t;
-typedef uint32_t        uint_fast32_t;
-typedef uint64_t        uint_fast64_t;
-
-
-/* 7.18.1.4 Integer types capable of holding object pointers */
-                                        /* intptr_t is defined in <arch/types.h> */
-                                        /* uintptr_t is defined in <arch/types.h> */
-
-
-/* 7.18.1.5 Greatest-width integer types */
-typedef long long                intmax_t;
-typedef unsigned long long      uintmax_t;
-
-/* 7.18.2 Limits of specified-width integer types:
- *   These #defines specify the minimum and maximum limits
- *   of each of the types declared above.
- */
-
-
-/* 7.18.2.1 Limits of exact-width integer types */
-#define INT8_MAX         127
-#define INT16_MAX        32767
-#define INT32_MAX        2147483647
-#define INT64_MAX        9223372036854775807LL
-
-#define INT8_MIN          -128
-#define INT16_MIN         -32768
-   /*
-      Note:  the literal "most negative int" cannot be written in C --
-      the rules in the standard (section 6.4.4.1 in C99) will give it
-      an unsigned type, so INT32_MIN (and the most negative member of
-      any larger signed type) must be written via a constant expression.
-   */
-#define INT32_MIN        (-INT32_MAX-1)
-#define INT64_MIN        (-INT64_MAX-1)
-
-#define UINT8_MAX         255
-#define UINT16_MAX        65535
-#define UINT32_MAX        4294967295U
-#define UINT64_MAX        18446744073709551615ULL
-
-/* 7.18.2.2 Limits of minimum-width integer types */
-#define INT_LEAST8_MIN    INT8_MIN
-#define INT_LEAST16_MIN   INT16_MIN
-#define INT_LEAST32_MIN   INT32_MIN
-#define INT_LEAST64_MIN   INT64_MIN
-
-#define INT_LEAST8_MAX    INT8_MAX
-#define INT_LEAST16_MAX   INT16_MAX
-#define INT_LEAST32_MAX   INT32_MAX
-#define INT_LEAST64_MAX   INT64_MAX
-
-#define UINT_LEAST8_MAX   UINT8_MAX
-#define UINT_LEAST16_MAX  UINT16_MAX
-#define UINT_LEAST32_MAX  UINT32_MAX
-#define UINT_LEAST64_MAX  UINT64_MAX
-
-/* 7.18.2.3 Limits of fastest minimum-width integer types */
-#define INT_FAST8_MIN     INT8_MIN
-#define INT_FAST16_MIN    INT16_MIN
-#define INT_FAST32_MIN    INT32_MIN
-#define INT_FAST64_MIN    INT64_MIN
-
-#define INT_FAST8_MAX     INT8_MAX
-#define INT_FAST16_MAX    INT16_MAX
-#define INT_FAST32_MAX    INT32_MAX
-#define INT_FAST64_MAX    INT64_MAX
-
-#define UINT_FAST8_MAX    UINT8_MAX
-#define UINT_FAST16_MAX   UINT16_MAX
-#define UINT_FAST32_MAX   UINT32_MAX
-#define UINT_FAST64_MAX   UINT64_MAX
-
-/* 7.18.2.4 Limits of integer types capable of holding object pointers */
-
-#if __WORDSIZE == 64
-#define INTPTR_MIN      INT64_MIN
-#define INTPTR_MAX      INT64_MAX
+#if	__CHAR_BIT__ == 16
+typedef char					int16_t;
+typedef unsigned char			uint16_t;
+typedef int16_t					int_least16_t;
+typedef uint16_t					uint_least16_t;
+#elif	__CHAR_BIT__ * __SIZEOF_SHORT__ == 16
+typedef short					int16_t;
+typedef unsigned short			uint16_t;
+typedef int16_t					int_least16_t;
+typedef uint16_t					uint_least16_t;
+#elif	__CHAR_BIT__ * __SIZEOF_INT__ == 16
+typedef int					int16_t;
+typedef unsigned int				uint16_t;
+typedef int16_t					int_least16_t;
+typedef uint16_t					uint_least16_t;
+#elif	__CHAR_BIT__ * __SIZEOF_LONG__ == 16
+typedef long					int16_t;
+typedef unsigned long			uint16_t;
+typedef int16_t					int_least16_t;
+typedef uint16_t					uint_least16_t;
+#elif	__CHAR_BIT__ * __SIZEOF_LONG_LONG__ == 16
+typedef long long				int16_t;
+typedef unsigned long long		uint16_t;
+typedef int16_t					int_least16_t;
+typedef uint16_t					uint_least16_t;
+#elif	__CHAR_BIT__ * __SIZEOF_LONG_LONG__ >= 16
+typedef long long				int_least16_t;
+typedef unsigned long long		uint_least16_t;
 #else
-#define INTPTR_MIN        INT32_MIN
-#define INTPTR_MAX        INT32_MAX
+#error Could not determine int_least16_t and uint_least16_t
 #endif
 
-#if __WORDSIZE == 64
-#define UINTPTR_MAX      UINT64_MAX
+
+#if	__CHAR_BIT__ == 32
+typedef char					int32_t;
+typedef unsigned char			uint32_t;
+typedef int32_t					int_least32_t;
+typedef uint32_t					uint_least32_t;
+#elif	__CHAR_BIT__ * __SIZEOF_SHORT__ == 32
+typedef short					int32_t;
+typedef unsigned short			uint32_t;
+typedef int32_t					int_least32_t;
+typedef uint32_t					uint_least32_t;
+#elif	__CHAR_BIT__ * __SIZEOF_INT__ == 32
+typedef int					int32_t;
+typedef unsigned int				uint32_t;
+typedef int32_t					int_least32_t;
+typedef uint32_t					uint_least32_t;
+#elif	__CHAR_BIT__ * __SIZEOF_LONG__ == 32
+typedef long					int32_t;
+typedef unsigned long			uint32_t;
+typedef int32_t					int_least32_t;
+typedef uint32_t					uint_least32_t;
+#elif	__CHAR_BIT__ * __SIZEOF_LONG_LONG__ == 32
+typedef long long				int32_t;
+typedef unsigned long long		uint32_t;
+typedef int32_t					int_least32_t;
+typedef uint32_t					uint_least32_t;
+#elif	__CHAR_BIT__ * __SIZEOF_LONG_LONG__ >= 32
+typedef long long				int_least32_t;
+typedef unsigned long long		uint_least32_t;
 #else
-#define UINTPTR_MAX       UINT32_MAX
+#error Could not determine int_least32_t and uint_least32_t
 #endif
 
-/* 7.18.2.5 Limits of greatest-width integer types */
-#define INTMAX_MIN        INT64_MIN
-#define INTMAX_MAX        INT64_MAX
 
-#define UINTMAX_MAX       UINT64_MAX
-
-/* 7.18.3 "Other" */
-#if __WORDSIZE == 64
-#define PTRDIFF_MIN      INT64_MIN
-#define PTRDIFF_MAX      INT64_MAX
+#if	__CHAR_BIT__ == 64
+typedef char					int64_t;
+typedef unsigned char			uint64_t;
+typedef int64_t					int_least64_t;
+typedef uint64_t					uint_least64_t;
+#elif	__CHAR_BIT__ * __SIZEOF_SHORT__ == 64
+typedef short					int64_t;
+typedef unsigned short			uint64_t;
+typedef int64_t					int_least64_t;
+typedef uint64_t					uint_least64_t;
+#elif	__CHAR_BIT__ * __SIZEOF_INT__ == 64
+typedef int					int64_t;
+typedef unsigned int				uint64_t;
+typedef int64_t					int_least64_t;
+typedef uint64_t					uint_least64_t;
+#elif	__CHAR_BIT__ * __SIZEOF_LONG__ == 64
+typedef long					int64_t;
+typedef unsigned long			uint64_t;
+typedef int64_t					int_least64_t;
+typedef uint64_t					uint_least64_t;
+#elif	__CHAR_BIT__ * __SIZEOF_LONG_LONG__ == 64
+typedef long long				int64_t;
+typedef unsigned long long		uint64_t;
+typedef int64_t					int_least64_t;
+typedef uint64_t					uint_least64_t;
+#elif	__CHAR_BIT__ * __SIZEOF_LONG_LONG__ >= 64
+typedef long long				int_least64_t;
+typedef unsigned long long		uint_least64_t;
 #else
-#define PTRDIFF_MIN       INT32_MIN
-#define PTRDIFF_MAX       INT32_MAX
+#error Could not determine int_least64_t and uint_least64_t
 #endif
 
-/* We have no sig_atomic_t yet, so no SIG_ATOMIC_{MIN,MAX}.
-   Should end up being {-127,127} or {0,255} ... or bigger.
-   My bet would be on one of {U}INT32_{MIN,MAX}. */
 
-#if __WORDSIZE == 64
-#define SIZE_MAX      UINT64_MAX
-#else
-#define SIZE_MAX          UINT32_MAX
+typedef int_least8_t				int_fast8_t;
+typedef uint_least8_t				uint_fast8_t;
+typedef int_least16_t				int_fast16_t;
+typedef uint_least16_t				uint_fast16_t;
+typedef int_least32_t				int_fast32_t;
+typedef uint_least32_t				uint_fast32_t;
+typedef int_least64_t				int_fast64_t;
+typedef uint_least64_t				uint_fast64_t;
+
+
+#if	__SIZEOF_POINTER__ <= 1
+typedef char					intptr_t;
+typedef unsigned char			uintptr_t;
+#elif	__SIZEOF_POINTER__ <= __SIZEOF_SHORT__
+typedef short					intptr_t;
+typedef unsigned short			uintptr_t;
+#elif	__SIZEOF_POINTER__ <= __SIZEOF_INT__
+typedef int					intptr_t;
+typedef unsigned int				uintptr_t;
+#elif	__SIZEOF_POINTER__ <= __SIZEOF_LONG__
+typedef long					intptr_t;
+typedef unsigned long			uintptr_t;
+#elif	__SIZEOF_POINTER__ <= __SIZEOF_LONG_LONG__
+typedef long long				intptr_t;
+typedef unsigned long long		uintptr_t;
 #endif
 
-#if defined(__STDC_WANT_LIB_EXT1__) && __STDC_WANT_LIB_EXT1__ >= 1
-#define RSIZE_MAX         (SIZE_MAX >> 1)
-#endif
-
-#ifndef WCHAR_MAX
-#  ifdef __WCHAR_MAX__
-#    define WCHAR_MAX     __WCHAR_MAX__
-#  else
-#    define WCHAR_MAX     0x7fffffff
-#  endif
-#endif
-
-/* WCHAR_MIN should be 0 if wchar_t is an unsigned type and
-   (-WCHAR_MAX-1) if wchar_t is a signed type.  Unfortunately,
-   it turns out that -fshort-wchar changes the signedness of
-   the type. */
-#ifndef WCHAR_MIN
-#  if WCHAR_MAX == 0xffff
-#    define WCHAR_MIN       0
-#  else
-#    define WCHAR_MIN       (-WCHAR_MAX-1)
-#  endif
-#endif
-
-#define WINT_MIN      INT32_MIN
-#define WINT_MAX      INT32_MAX
-
-#define SIG_ATOMIC_MIN      INT32_MIN
-#define SIG_ATOMIC_MAX      INT32_MAX
-
-/* 7.18.4 Macros for integer constants */
-#define INT8_C(v)    (v)
-#define INT16_C(v)   (v)
-#define INT32_C(v)   (v)
-#define INT64_C(v)   (v ## LL)
-
-#define UINT8_C(v)   (v ## U)
-#define UINT16_C(v)  (v ## U)
-#define UINT32_C(v)  (v ## U)
-#define UINT64_C(v)  (v ## ULL)
-
-#define INTMAX_C(v)  (v ## LL)
-#define UINTMAX_C(v) (v ## ULL)
 
 #endif

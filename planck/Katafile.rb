@@ -25,4 +25,5 @@ $kernel.cc_rules = Configuration.new $kernel.cc_rules do
 end
 
 import 'arch/' + $kernel.arch_dir
+import 'lib'
 import 'kernel'
