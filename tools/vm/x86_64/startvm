@@ -1,5 +1,4 @@
 #!/bin/bash
 
-export VMDIR=$( cd "$( dirname "$0" )" && pwd )
-bochs -q -f $VMDIR/bochsrc.bxrc
-
+BUILDDIR=build/$PLANCK_PLATFORM/$PLANCK_CONFIGURATION
+qemu-system-x86_64 -cpu Westmere -m 128 -smp 4 -hda $PLANCK_VMDIR/grub.img -hdb fat:$BUILDDIR $*

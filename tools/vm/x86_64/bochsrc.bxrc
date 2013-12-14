@@ -8,14 +8,14 @@ floppy_bootsig_check: disabled=0
 # no floppya
 # no floppyb
 ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
-ata0-master: type=disk, path="$PLANCK_VMDIR/grub.img", mode=flat, cylinders=0, heads=16, spt=63, model="Generic 1234", biosdetect=auto, translation=auto
-ata0-slave: type=disk, path="$PLANCK_BUILD_OUT/", mode=vvfat, journal=none, cylinders=0, heads=0, spt=0, model="Generic 1234", biosdetect=auto, translation=auto
+ata0-master: type=disk, path="$PLANCK_VMDIR/grub.img", mode=flat, model="Generic 1234", biosdetect=auto, translation=auto
+ata0-slave: type=disk, path="$PLANCK_BUILD_OUT/", mode=vvfat, journal=none, model="Generic 1234", biosdetect=auto, translation=auto
 ata1: enabled=0
 ata2: enabled=0
 ata3: enabled=0
 pci: enabled=1, chipset=i440fx
 vga: extension=vbe, update_freq=5
-cpu: count=4:1:1, ips=40000000, quantum=16, model=corei5_arrandale_m520, reset_on_triple_fault=0, cpuid_limit_winnt=0, ignore_bad_msrs=1, mwait_is_nop=0
+cpu: count=4:1:1, ips=40000000, quantum=16, reset_on_triple_fault=0, cpuid_limit_winnt=0, ignore_bad_msrs=1, mwait_is_nop=0
 print_timestamps: enabled=0
 debugger_log: -
 magic_break: enabled=0

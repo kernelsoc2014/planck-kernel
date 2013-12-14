@@ -106,5 +106,5 @@ void trap_init()
     }
 
     lidt((uintptr_t *)&kernel_idtr);
-    sti();
+    //sti();
 }
