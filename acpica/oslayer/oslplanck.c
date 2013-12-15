@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 #include <planck/kmalloc.h>
-#include <arch/early_printk.h>
+#include <arch/earlyoutput.h>
 
 #define _COMPONENT          ACPI_OS_SERVICES
         ACPI_MODULE_NAME    ("oslplanck")
@@ -175,13 +175,13 @@ void AcpiOsPrintf(const char *Format, ...)
 {
     va_list ap;
     va_start(ap, Format);
-    early_vprintk(Format, ap);
+    KeEarlyVOutput(Format, ap);
     va_end(ap);
 }
 
 void AcpiOsVprintf(const char *Format, va_list Args)
 {
-    early_vprintk(Format, Args);
+    KeEarlyVOutput(Format, Args);
 }
 
 void AcpiOsRedirectOutput(void *Destination)

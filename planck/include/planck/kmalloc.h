@@ -5,7 +5,7 @@
 
 __BEGIN_DECLS
 
-void kmalloc_initialize();
+void KiAllocInitialize();
 
 void *malloc(size_t size);
 void *malloc_page_aligned(size_t size);

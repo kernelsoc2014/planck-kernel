@@ -2,9 +2,9 @@
 #include <arch/boot.h>
 #include <multiboot2.h>
 
-static bootinfo_t __initdata tbi;
+static BootInfo __initdata tbi;
 
-bootinfo_t *__init multiboot_setup(struct multiboot_tag *tags)
+BootInfo *__init MultibootSetup(struct multiboot_tag *tags)
 {
     return &tbi;
 }

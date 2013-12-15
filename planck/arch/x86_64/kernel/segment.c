@@ -2,48 +2,48 @@
 #include <arch/task.h>
 #include <arch/cpu.h>
 
-static gdt_descriptor_t kernel_gdt[GDT_SIZE];
-static descriptor_descriptor64_t kernel_gdtr = { sizeof(kernel_gdt) - 1, (uint64_t)&kernel_gdt };
+static GdtDescriptor KernelGdt[GDT_SIZE];
+static DescriptorRegister64 KernelGdtr = { sizeof(KernelGdt) - 1, (uint64_t)&KernelGdt };
 
-void segment_set(int seg, uint32_t base, uint32_t limit, uint8_t gran, uint8_t access)
+static void AcSegmentSet(int seg, uint32_t base, uint32_t limit, uint8_t gran, uint8_t access)
 {
-    gdt_descriptor_t *g = &kernel_gdt[SEL_TO_INDEX(seg)];
+    GdtDescriptor *g = &KernelGdt[SEL_TO_INDEX(seg)];
 
-    g->limit_low = limit & 0xffff;
-    g->limit_high = (limit >> 16) & 0xf;
-    g->base_low = base & 0xffff;
-    g->base_med = (base >> 16) & 0xff;
-    g->base_high = (base >> 24) & 0xff;
-    g->access = access;
-    g->granularity = gran;
+    g->LimitLow = limit & 0xffff;
+    g->LimitHigh = (limit >> 16) & 0xf;
+    g->BaseLow = base & 0xffff;
+    g->BaseMed = (base >> 16) & 0xff;
+    g->BaseHigh = (base >> 24) & 0xff;
+    g->Access = access;
+    g->Granularity = gran;
 }
 
-void segment_set64(int seg, uint64_t base, uint64_t limit, uint8_t gran, uint8_t access)
+static void AcSegmentSet64(int seg, uint64_t base, uint64_t limit, uint8_t gran, uint8_t access)
 {
-    gdt_descriptor64_t *g = (gdt_descriptor64_t *)&kernel_gdt[SEL_TO_INDEX(seg)];
+    GdtDescriptor64 *g = (GdtDescriptor64 *)&KernelGdt[SEL_TO_INDEX(seg)];
 
-    g->limit_low = limit & 0xFFFF;
-    g->base_low = (uint16_t)(base & 0xFFFF);
-    g->base_med = (uint8_t)((base >> 16) & 0xFF);
-    g->access = access;
-    g->limit_high = (limit >> 16) & 0xFF;
-    g->granularity = gran;
-    g->base_high = (uint8_t)((base >> 24) & 0xFF);
-    g->base_top = (uint32_t)(    base >> 32);
+    g->LimitLow = limit & 0xFFFF;
+    g->BaseLow = (uint16_t)(base & 0xFFFF);
+    g->BaseMed = (uint8_t)((base >> 16) & 0xFF);
+    g->Access = access;
+    g->LimitHigh = (limit >> 16) & 0xFF;
+    g->Granularity = gran;
+    g->BaseHigh = (uint8_t)((base >> 24) & 0xFF);
+    g->BaseTop = (uint32_t)(base >> 32);
 }
 
-void segment_init()
+void AcSegmentInitialize()
 {
-    uint64_t tss = (uint64_t)&task_kernel_tss;
-    uint64_t tss_limit = sizeof(task_kernel_tss) - 1;
+    uint64_t tss = (uint64_t)&TaskKernelTss;
+    uint64_t tss_limit = sizeof(TaskKernelTss) - 1;
 
-    segment_set(KERNEL64_CS, 0, 0xfffff, SZ_64 | SZ_G, ACC_P | ACC_PL_K | ACC_CODE_R);
-    segment_set(KERNEL_DS, 0, 0xfffff, SZ_32 | SZ_G, ACC_P | ACC_PL_K | ACC_DATA_W);
-    segment_set(USER32_CS, 0, 0xfffff, SZ_32 | SZ_G, ACC_P | ACC_PL_U | ACC_CODE_R);
-    segment_set(USER32_DS, 0, 0xfffff, SZ_32 | SZ_G, ACC_P | ACC_PL_U | ACC_DATA_W);
-    segment_set(USER64_DS, 0, 0xfffff, SZ_64 | SZ_G, ACC_P | ACC_PL_U | ACC_CODE_R);
-    segment_set64(KERNEL_TSS, tss, tss_limit, 0, ACC_P | ACC_PL_K | ACC_TSS);
+    AcSegmentSet(kKernelCode64,  0,   0xfffff, kDescriptor64 | kDescriptorG, kDescriptorPresent | kDescriptorPrivK | kDescriptorCodeR);
+    AcSegmentSet(kKernelData,    0,   0xfffff, kDescriptor32 | kDescriptorG, kDescriptorPresent | kDescriptorPrivK | kDescriptorDataW);
+    AcSegmentSet(kUserCode32,    0,   0xfffff, kDescriptor32 | kDescriptorG, kDescriptorPresent | kDescriptorPrivU | kDescriptorCodeR);
+    AcSegmentSet(kUserData,      0,   0xfffff, kDescriptor32 | kDescriptorG, kDescriptorPresent | kDescriptorPrivU | kDescriptorDataW);
+    AcSegmentSet(kUserCode64,    0,   0xfffff, kDescriptor64 | kDescriptorG, kDescriptorPresent | kDescriptorPrivU | kDescriptorCodeR);
+    AcSegmentSet64(kSystemTss, tss, tss_limit, 0,                              kDescriptorPresent | kDescriptorPrivK | kDescriptorTss);
 
-    lgdt((uintptr_t *)&kernel_gdtr);
-    set_tr(KERNEL_TSS);
+    lgdt((uintptr_t *)&KernelGdtr);
+    set_tr(kSystemTss);
 }

@@ -1,8 +1,5 @@
 #include <planck/compiler.h>
 #include <gensym/asm_symbols.h>
-#include <arch/trap.h>
-#include <arch/segment.h>
-#include <arch/cpu.h>
 
 #define PUSH_FUNCTION(func)   \
     sub    $8, %rsp          ;\
@@ -28,7 +25,7 @@
 #define USER_TRAP TRAP
 
 #define INTERRUPT(n)                     \
-    Entry(_intr_ ## n)                  ;\
+    Entry(Interrupt##n)                 ;\
     pushq    $0                         ;\
     IDT_ENTRY_WRAPPER(n, L_dispatch)
 
@@ -39,7 +36,7 @@
 
 #define CPU_KERNEL_STACK 0
 
-#include "idt_table.h"
+#include "idttable.h"
 
 L_dispatch:
     cmpl    $KERNEL64_CS, ISF64_CS(%rsp)
@@ -60,7 +57,7 @@ L_dispatch_kernel:
     mov    %rsp, %r15
 
 L_dispatch_64bit:
-    movl    $(SS_64), SS_FLAVOR(%r15)
+    movl    $(SS_64), SS_TYPE(%r15)
 
     mov    %fs, R64_FS(%r15)
     mov    %gs, R64_GS(%r15)
@@ -82,11 +79,11 @@ L_dispatch_64bit:
 
     iretq
 
-Entry(idt64_debug)
-Entry(idt64_nmi)
-Entry(idt64_double_fault)
-Entry(idt64_segnp)
-Entry(idt64_stack_fault)
-Entry(idt64_gen_prot)
-Entry(idt64_page_fault)
-Entry(idt64_mc)
+Entry(IdtDebug)
+Entry(IdtNmi)
+Entry(IdtDoubleFault)
+Entry(IdtSegment)
+Entry(IdtStackFault)
+Entry(IdtGeneralProtection)
+Entry(IdtPageFault)
+Entry(IdtMachieCheck)

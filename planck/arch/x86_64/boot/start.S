@@ -1,8 +1,7 @@
 #include <planck/compiler.h>
+#include <gensym/asm_symbols.h>
 #include <arch/boot.h>
-#include <arch/page.h>
 #include <arch/cpu.h>
-#include <arch/segment.h>
 
 #define SWITCH_TO_64BIT_MODE                            \
     movl $CR4_PAE, %eax                                ;\
@@ -11,7 +10,7 @@
     rdmsr                                              ;\
     orl $(MSR_IA32_EFER_LME | MSR_IA32_EFER_NXE), %eax ;\
     wrmsr                                              ;\
-    movl $boot_pml4, %eax                              ;\
+    movl $BootPml4, %eax                               ;\
     movl %eax, %cr3                                    ;\
     movl %cr0, %eax                                    ;\
     orl $(CR0_PG | CR0_WP), %eax                       ;\
@@ -32,7 +31,7 @@ mb_start_entry:
     .short 3
     .short 0
     .long mb_end_entry - mb_start_entry
-    .long multiboot_startup
+    .long MultibootStartup
     .long 0
 mb_end_entry:
 
@@ -55,53 +54,53 @@ mb_end:
 
 .section .init
 .code32
-multiboot_startup:
+MultibootStartup:
     xor $0x36d76289, %eax
     jz 1f
     hlt
 
 1:
     cld
-    movl $boot_stack_end, %esp
+    movl $BootStackEnd, %esp
 
     pushl %ebx
-    call multiboot_setup
+    call MultibootSetup
     movl %eax, %edi
 
-    jmp startup_64_post
+    jmp Startup64Post
 
-Entry(startup_64)
+Entry(Startup64)
     cld
-    movl $boot_stack_end, %esp
+    movl $BootStackEnd, %esp
 
-startup_64_post:
-    movl $boot_gdtr, %eax
+Startup64Post:
+    movl $BootGdtr, %eax
     lgdtl (%eax)
 
     SWITCH_TO_64BIT_MODE
 
-    leaq kernel_start, %rcx
+    leaq KiKernelStart, %rcx
     pushq %rdi
     callq *%rcx
     hlt
 
-Entry(startup_slave_64)
+Entry(StartupSlave64)
     cli
     cld
-    movl $boot_stack_slave_end, %esp
+    movl $BootSlaveStackEnd, %esp
     xor %edi, %edi
-    jmp startup_64_post
+    jmp Startup64Post
 
 .section .init.data
 
-boot_gdtr:
+BootGdtr:
     .word 160
-    .quad boot_gdt
+    .quad BootGdt
 
-boot_stack:
+BootStack:
     .fill BOOT_STACK_SIZE, 1, 0
-boot_stack_end:
+BootStackEnd:
 
-boot_stack_slave:
+BootSlaveStack:
     .fill BOOT_STACK_SIZE, 1, 0
-boot_stack_slave_end:
+BootSlaveStackEnd:

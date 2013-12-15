@@ -1,115 +1,112 @@
 #pragma once
 
-#define X86_SAVED_STATE32      0
-#define X86_SAVED_STATE64      1
-
-#ifndef __ASSEMBLER__
-
 #include <stdint.h>
 #include <planck/compiler.h>
+#include <planck/status.h>
+
+__BEGIN_DECLS
+
+typedef enum
+{
+    kTaskState32,
+    kTaskState64
+} TaskStateType;
 
 #pragma pack(4)
 
 typedef struct
 {
-    uint32_t gs;
-    uint32_t fs;
-    uint32_t es;
-    uint32_t ds;
-    uint32_t edi;
-    uint32_t esi;
-    uint32_t ebp;
-    uint32_t cr2;
-    uint32_t ebx;
-    uint32_t edx;
-    uint32_t ecx;
-    uint32_t eax;
-    uint16_t trapno;
-    uint16_t cpu;
-    uint32_t err;
-    uint32_t eip;
-    uint32_t cs;
-    uint32_t efl;
-    uint32_t uesp;
-    uint32_t ss;
-} x86_saved_state32_t;
+    uint32_t GS;
+    uint32_t FS;
+    uint32_t ES;
+    uint32_t DS;
+    uint32_t EDI;
+    uint32_t ESI;
+    uint32_t EBP;
+    uint32_t CR2;
+    uint32_t EBX;
+    uint32_t EDX;
+    uint32_t ECX;
+    uint32_t EAX;
+    uint16_t TrapNumber;
+    uint16_t CPU;
+    uint32_t Error;
+    uint32_t EIP;
+    uint32_t CS;
+    uint32_t EFlags;
+    uint32_t UserESP;
+    uint32_t SS;
+} TaskSavedState32;
 
 typedef struct
 {
-    uint16_t trapno;
-    uint16_t cpu;
-    uint32_t _pad;
-    uint64_t trapfn;
-    uint64_t err;
-    uint64_t rip;
-    uint64_t cs;
-    uint64_t rflags;
-    uint64_t rsp;
-    uint64_t ss;
-} x86_64_intr_stack_frame;
+    uint16_t TrapNumber;
+    uint16_t CPU;
+    uint32_t Pad;
+    uint64_t TrapFunction;
+    uint64_t Error;
+    uint64_t RIP;
+    uint64_t CS;
+    uint64_t RFlags;
+    uint64_t RSP;
+    uint64_t SS;
+} InterruptStackFrame;
 
 typedef struct
 {
-    uint64_t rdi;
-    uint64_t rsi;
-    uint64_t rdx;
-    uint64_t r10;
-    uint64_t r8;
-    uint64_t r9;
-    uint64_t v_arg6;
-    uint64_t v_arg7;
-    uint64_t v_arg8;
-    uint64_t cr2;
-    uint64_t r15;
-    uint64_t r14;
-    uint64_t r13;
-    uint64_t r12;
-    uint64_t r11;
-    uint64_t rbp;
-    uint64_t rbx;
-    uint64_t rcx;
-    uint64_t rax;
+    uint64_t RDI;
+    uint64_t RSI;
+    uint64_t RDX;
+    uint64_t R10;
+    uint64_t R8;
+    uint64_t R9;
+    uint64_t Arg6;
+    uint64_t Arg7;
+    uint64_t Arg8;
+    uint64_t CR2;
+    uint64_t R15;
+    uint64_t R14;
+    uint64_t R13;
+    uint64_t R12;
+    uint64_t R11;
+    uint64_t RBP;
+    uint64_t RBX;
+    uint64_t RCX;
+    uint64_t RAX;
 
-    uint32_t gs;
-    uint32_t fs;
+    uint32_t GS;
+    uint32_t FS;
 
-    x86_64_intr_stack_frame isf;
-} x86_saved_state64_t;
+    InterruptStackFrame Interrupt;
+} TaskSavedState64;
 
 typedef struct
 {
-    uint32_t flavor;
-    uint32_t _pad_for_16byte_alignment[3];
+    uint32_t Type;
+    uint32_t Pad[3];
 
     union
     {
-        x86_saved_state32_t ss_32;
-        x86_saved_state64_t ss_64;
-    } uss;
-} x86_saved_state_t;
-
-#define ss_32 uss.ss_32
-#define ss_64 uss.ss_64
+        TaskSavedState32 T32;
+        TaskSavedState64 T64;
+    } State;
+} TaskSavedState;
 
 typedef struct
 {
-    uint32_t res0;
-    uint64_t rsp0;
-    uint64_t rsp1;
-    uint64_t rsp2;
-    uint64_t res1;
-    uint64_t ist[7];
-    uint64_t res2;
-    uint16_t res3;
-    uint16_t iomap;
-} system_tss_t;
+    uint32_t Reserved0;
+    uint64_t RSP0;
+    uint64_t RSP1;
+    uint64_t RSP2;
+    uint64_t Reserved1;
+    uint64_t IST[7];
+    uint64_t Reserved2;
+    uint16_t Reserved3;
+    uint16_t IOMap;
+} SystemTss;
 
 #pragma pack()
 
-__BEGIN_DECLS
-
-extern system_tss_t task_kernel_tss;
+extern SystemTss TaskKernelTss;
 
 __END_DECLS
-
-#endif

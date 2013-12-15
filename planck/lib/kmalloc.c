@@ -1,5 +1,5 @@
 #include <planck/kmalloc.h>
-#include <arch/early_printk.h>
+#include <arch/earlyoutput.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -8,7 +8,7 @@ extern void *__brk_base, *__brk_limit;
 static uintptr_t brk_base;
 static uintptr_t brk_limit;
 
-void kmalloc_initialize()
+void KiAllocInitialize()
 {
     brk_base = (uintptr_t)&__brk_base;
     brk_limit = (uintptr_t)&__brk_limit;
@@ -21,7 +21,7 @@ void *malloc(size_t size)
     brk_base += size;
 
     if (brk_base > brk_limit)
-        early_printk("WARNING: sbrk limit reached!");
+        KeEarlyOutput("WARNING: sbrk limit reached!");
 
     return (void *)ptr;
 }
@@ -36,7 +36,7 @@ void *malloc_page_aligned(size_t size)
     brk_base += ptr - brk_base + size;
 
     if (brk_base > brk_limit)
-        early_printk("WARNING: sbrk limit reached!");
+        KeEarlyOutput("WARNING: sbrk limit reached!");
 
     return (void *)ptr;
 }

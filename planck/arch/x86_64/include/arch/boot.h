@@ -7,6 +7,6 @@
 typedef struct
 {
 
-} bootinfo_t;
+} BootInfo;
 
 #endif

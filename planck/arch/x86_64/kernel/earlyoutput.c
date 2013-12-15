@@ -1,4 +1,4 @@
-#include <arch/early_printk.h>
+#include <arch/earlyoutput.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
@@ -106,16 +106,16 @@ static void monitor_write(char *c)
    }
 }
 
-void early_vprintk(const char *format, va_list args)
+void KeEarlyVOutput(const char *format, va_list args)
 {
     vsnprintf(format_buffer, sizeof(format_buffer), format, args);
     monitor_write(format_buffer);
 }
 
-void early_printk(const char *format, ...)
+void KeEarlyOutput(const char *format, ...)
 {
     va_list ap;
     va_start(ap, format);
-    early_vprintk(format, ap);
+    KeEarlyVOutput(format, ap);
     va_end(ap);
 }

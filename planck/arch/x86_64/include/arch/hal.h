@@ -5,6 +5,6 @@
 
 __BEGIN_DECLS
 
-void AcInitialize(void *bootArguments);
+void HalInitialize(void *bootArguments);
 
 __END_DECLS

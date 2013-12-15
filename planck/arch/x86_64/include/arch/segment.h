@@ -3,138 +3,127 @@
 #define GDT_SIZE 19
 #define IDT_SIZE 256
 
-#define SZ_64 0x2
-#define SZ_32 0x4
-#define SZ_G  0x8
-
-#define ACC_A     0x01
-#define ACC_TYPE  0x1e
-
-#define ACC_TYPE_SYSTEM  0x00
-
-#define ACC_LDT          0x02
-#define ACC_CALL_GATE_16 0x04
-#define ACC_TASK_GATE    0x05
-#define ACC_TSS          0x09
-#define ACC_CALL_GATE    0x0c
-#define ACC_INTR_GATE    0x0e
-#define ACC_TRAP_GATE    0x0f
-
-#define ACC_TSS_BUSY     0x02
-
-#define ACC_TYPE_USER    0x10
-
-#define ACC_DATA         0x10
-#define ACC_DATA_W       0x12
-#define ACC_DATA_E       0x14
-#define ACC_DATA_EW      0x16
-
-#define ACC_CODE         0x18
-#define ACC_CODE_R       0x1a
-#define ACC_CODE_C       0x1c
-#define ACC_CODE_CR      0x1e
-
-#define ACC_PL           0x60
-#define ACC_PL_K         0x00
-#define ACC_PL_U         0x60
-#define ACC_P            0x80
-
-#define SEL_LDTS         0x04
-#define SEL_PL           0x03
-#define SEL_PL_K         0x00
-#define SEL_PL_U         0x03
-
 #define SEL_TO_INDEX(s)  ((s) >> 3)
-
-#define NULL_SEG       0
-
-#define KERNEL64_CS    (0x08 | 0)
-#define KERNEL_DS      (0x10 | 0)
-#define USER32_CS      (0x18 | 3)
-#define USER32_DS      (0x20 | 3)
-#define USER64_CS      (0x28 | 3)
-#define USER64_DS      USER32_DS
-#define KERNEL_TSS     (0x30 | 0)
 
 #ifndef __ASSEMBLER__
 
 #include <stdint.h>
 #include <planck/compiler.h>
+#include <planck/status.h>
 
 #pragma pack(1)
 
 typedef struct
 {
-    uint16_t size;
-    uint32_t address;
-} descriptor_descriptor_t;
+    uint16_t Size;
+    uint32_t Address;
+} DescriptorRegister;
 
 typedef struct
 {
-    uint16_t size;
-    uint64_t address;
-} descriptor_descriptor64_t;
+    uint16_t Size;
+    uint64_t Address;
+} DescriptorRegister64;
 
 typedef struct
 {
-    uint32_t limit_low : 16;
-    uint32_t base_low : 16;
-    uint32_t base_med : 8;
-    uint32_t access : 8;
-    uint32_t limit_high : 4;
-    uint32_t granularity : 4;
-    uint32_t base_high : 8;
-} gdt_descriptor_t;
+    uint32_t LimitLow : 16;
+    uint32_t BaseLow : 16;
+    uint32_t BaseMed : 8;
+    uint32_t Access : 8;
+    uint32_t LimitHigh : 4;
+    uint32_t Granularity : 4;
+    uint32_t BaseHigh : 8;
+} GdtDescriptor;
 
 typedef struct
 {
-    uint32_t limit_low : 16;
-    uint32_t base_low : 16;
-    uint32_t base_med : 8;
-    uint32_t access : 8;
-    uint32_t limit_high : 4;
-    uint32_t granularity :4 ;
-    uint32_t base_high : 8;
-    uint32_t base_top : 32;
-    uint32_t reserved : 32;
-} gdt_descriptor64_t;
+    uint32_t LimitLow : 16;
+    uint32_t BaseLow : 16;
+    uint32_t BaseMed : 8;
+    uint32_t Access : 8;
+    uint32_t LimitHigh : 4;
+    uint32_t Granularity :4 ;
+    uint32_t BaseHigh : 8;
+    uint32_t BaseTop : 32;
+    uint32_t Reserved : 32;
+} GdtDescriptor64;
 
 typedef struct
 {
-    uint32_t offset_low : 16;
-    uint32_t selector : 16;
-    uint32_t word_count : 8;
-    uint32_t access : 8;
-    uint32_t offset_high : 16;
-} idt_gate_t;
+    uint32_t OffsetLow : 16;
+    uint32_t Selector : 16;
+    uint32_t WordCount : 8;
+    uint32_t Access : 8;
+    uint32_t OffsetHigh : 16;
+} IdtGate;
 
 typedef struct
 {
-    uint32_t offset_low : 16;
-    uint32_t selector : 16;
+    uint32_t OffsetLow : 16;
+    uint32_t Selector : 16;
     uint32_t IST : 3;
-    uint32_t zeroes : 5;
-    uint32_t access : 8;
-    uint32_t offset_high : 16;
-    uint32_t offset_top : 32;
-    uint32_t reserved : 32;
-} idt_gate64_t;
+    uint32_t Zeroes : 5;
+    uint32_t Access : 8;
+    uint32_t OffsetHigh : 16;
+    uint32_t OffsetTop : 32;
+    uint32_t Reserved : 32;
+} IdtGate64;
+
+typedef enum
+{
+    kNullSegment  = 0x00,
+    kKernelCode64 = 0x08,
+    kKernelData   = 0x10,
+    kUserCode32   = 0x18 | 3,
+    kUserData     = 0x20 | 3,
+    kUserCode64   = 0x28 | 3,
+    kSystemTss    = 0x30
+} KernelSegments;
+
+typedef enum
+{
+    kDescriptor64 = 0x2,
+    kDescriptor32 = 0x4,
+    kDescriptorG  = 0x8
+} DescriptorSize;
+
+typedef enum
+{
+    kDescriptorA         = 0x01,
+    kDescriptorTssBusy   = 0x02,
+    kDescriptorTss       = 0x09,
+    kDescriptorInterrupt = 0x0e,
+    kDescriptorTrap      = 0x0f,
+    kDescriptorUser      = 0x10,
+    kDescriptorData      = 0x10,
+    kDescriptorDataW     = 0x12,
+    kDescriptorDataE     = 0x14,
+    kDescriptorDataEW    = 0x16,
+    kDescriptorCode      = 0x18,
+    kDescriptorCodeR     = 0x1A,
+    kDescriptorCodeC     = 0x1C,
+    kDescriptorCodeCR    = 0x1E,
+    kDescriptorPrivK     = 0x00,
+    kDescriptorPrivU     = 0x60,
+    kDescriptorPresent   = 0x80
+} DescriptorAccess;
 
 #pragma pack()
 
 #define MAKE_GDT_DESCRIPTOR(base, lim, gran, acc) { \
-    .limit_low = lim & 0xffff, \
-    .limit_high = (lim >> 16) & 0xf, \
-    .base_low = base & 0xffff, \
-    .base_med = (base >> 16) & 0xff, \
-    .base_high = (base >> 24) & 0xff, \
-    .access = acc, \
-    .granularity = gran \
+    .LimitLow = lim & 0xffff, \
+    .LimitHigh = (lim >> 16) & 0xf, \
+    .BaseLow = base & 0xffff, \
+    .BaseMed = (base >> 16) & 0xff, \
+    .BaseHigh = (base >> 24) & 0xff, \
+    .Access = acc, \
+    .Granularity = gran \
 }
 
 __BEGIN_DECLS
 
-void segment_init();
+void AcSegmentInitialize();
 
 __END_DECLS
 

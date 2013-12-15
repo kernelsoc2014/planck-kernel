@@ -1,30 +1,29 @@
 #include <planck/compiler.h>
+#include <arch/memorymanager.h>
 #include <arch/page.h>
 
-extern pml4_entry_t boot_pml4[PAGE_TABLE_ENTRY_COUNT];
-extern pdpt_entry_t boot_pdpt[PAGE_TABLE_ENTRY_COUNT];
-extern pd_entry_t boot_ptd[4096];
+extern MmPml4Entry BootPml4[PAGE_TABLE_ENTRY_COUNT];
+extern MmPdptEntry BootPdpt[PAGE_TABLE_ENTRY_COUNT];
+extern MmPdEntry BootPtd[4096];
 
-#define PML4_FLAGS (PAGE_PRESENT | PAGE_WRITE)
-#define ID_MAP_PML4(x) [(x)] = (PML4_FLAGS + boot_pdpt),
-
-pml4_entry_t boot_pml4[PAGE_TABLE_ENTRY_COUNT]
+#define PML4_FLAGS (kPagePresent | kPageWrite)
+MmPml4Entry BootPml4[PAGE_TABLE_ENTRY_COUNT]
     __initdata __attribute__((aligned(PAGE_SIZE))) = {
 
-    [0] = PML4_FLAGS + (pml4_entry_t)boot_pdpt,
-    [PML4_KERNEL_INDEX] = PML4_FLAGS + (pml4_entry_t)boot_pdpt
+    [0] = PML4_FLAGS + (MmPml4Entry)BootPdpt,
+    [PML4_KERNEL_INDEX] = PML4_FLAGS + (MmPml4Entry)BootPdpt
 };
 
-#define PDPT_FLAGS (PAGE_PRESENT | PAGE_WRITE)
-pdpt_entry_t boot_pdpt[PAGE_TABLE_ENTRY_COUNT]
+#define PDPT_FLAGS (kPagePresent | kPageWrite)
+MmPdptEntry BootPdpt[PAGE_TABLE_ENTRY_COUNT]
     __initdata __attribute__((aligned(PAGE_SIZE))) = {
 
-    [0] = PDPT_FLAGS + (pdpt_entry_t)&boot_ptd[0],
-    [1] = PDPT_FLAGS + (pdpt_entry_t)&boot_ptd[512],
-    [2] = PDPT_FLAGS + (pdpt_entry_t)&boot_ptd[1024],
-    [3] = PDPT_FLAGS + (pdpt_entry_t)&boot_ptd[1536],
-    [510] = PDPT_FLAGS + (pdpt_entry_t)&boot_ptd[0],
-    [511] = PDPT_FLAGS + (pdpt_entry_t)&boot_ptd[512]
+    [0] = PDPT_FLAGS + (MmPdptEntry)&BootPtd[0],
+    [1] = PDPT_FLAGS + (MmPdptEntry)&BootPtd[512],
+    [2] = PDPT_FLAGS + (MmPdptEntry)&BootPtd[1024],
+    [3] = PDPT_FLAGS + (MmPdptEntry)&BootPtd[1536],
+    [510] = PDPT_FLAGS + (MmPdptEntry)&BootPtd[0],
+    [511] = PDPT_FLAGS + (MmPdptEntry)&BootPtd[512]
 };
 
 #define L0(x,n)  x(n)
@@ -42,10 +41,10 @@ pdpt_entry_t boot_pdpt[PAGE_TABLE_ENTRY_COUNT]
 
 #define FOR_0_TO_2047(x) L11(x,2047)
 
-#define PDT_FLAGS (PAGE_PS | PAGE_PRESENT | PAGE_WRITE)
+#define PDT_FLAGS (kPageSuperPage | kPagePresent | kPageWrite)
 #define ID_MAP_2MEG(x) [(x)] = ((((uint64_t)(x)) << 21) | (PDT_FLAGS)),
 
-pd_entry_t boot_ptd[4096]
+MmPdEntry BootPtd[4096]
     __initdata __attribute__((aligned(PAGE_SIZE))) = {
     FOR_0_TO_2047(ID_MAP_2MEG)
 };

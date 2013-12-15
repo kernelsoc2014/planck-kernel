@@ -16,75 +16,82 @@
 
 int main(int argc, char **argv)
 {
-    DECLARE("SS_FLAVOR", offsetof(x86_saved_state_t *, flavor));
-    DECLARE("SS_32", X86_SAVED_STATE32);
-    DECLARE("SS_64", X86_SAVED_STATE64);
+    DECLARE("KERNEL64_CS", kKernelCode64);
+    DECLARE("KERNEL_DS", kKernelData);
+    DECLARE("USER32_CS", kUserCode32);
+    DECLARE("USER32_DS", kUserData);
+    DECLARE("USER64_CS", kUserCode64);
+    DECLARE("USER64_DS", kUserData);
 
-#define R_(x)  offsetof(x86_saved_state_t *, ss_32.x)
-    DECLARE("R32_CS",     R_(cs));
-    DECLARE("R32_SS",     R_(ss));
-    DECLARE("R32_DS",     R_(ds));
-    DECLARE("R32_ES",     R_(es));
-    DECLARE("R32_FS",     R_(fs));
-    DECLARE("R32_GS",     R_(gs));
-    DECLARE("R32_UESP",   R_(uesp));
-    DECLARE("R32_EBP",    R_(ebp));
-    DECLARE("R32_EAX",    R_(eax));
-    DECLARE("R32_EBX",    R_(ebx));
-    DECLARE("R32_ECX",    R_(ecx));
-    DECLARE("R32_EDX",    R_(edx));
-    DECLARE("R32_ESI",    R_(esi));
-    DECLARE("R32_EDI",    R_(edi));
-    DECLARE("R32_TRAPNO", R_(trapno));
-    DECLARE("R32_ERR",    R_(err));
-    DECLARE("R32_EFLAGS", R_(efl));
-    DECLARE("R32_EIP",    R_(eip));
-    DECLARE("R32_CR2",    R_(cr2));
-    DECLARE("ISS32_SIZE", sizeof(x86_saved_state32_t));
+    DECLARE("SS_TYPE", offsetof(TaskSavedState *, Type));
+    DECLARE("SS_32", kTaskState32);
+    DECLARE("SS_64", kTaskState64);
 
-#define R64_(x)  offsetof(x86_saved_state_t *, ss_64.x)
-    DECLARE("R64_FS",     R64_(fs));
-    DECLARE("R64_GS",     R64_(gs));
-    DECLARE("R64_R8",     R64_(r8));
-    DECLARE("R64_R9",     R64_(r9));
-    DECLARE("R64_R10",    R64_(r10));
-    DECLARE("R64_R11",    R64_(r11));
-    DECLARE("R64_R12",    R64_(r12));
-    DECLARE("R64_R13",    R64_(r13));
-    DECLARE("R64_R14",    R64_(r14));
-    DECLARE("R64_R15",    R64_(r15));
-    DECLARE("R64_RBP",    R64_(rbp));
-    DECLARE("R64_RAX",    R64_(rax));
-    DECLARE("R64_RBX",    R64_(rbx));
-    DECLARE("R64_RCX",    R64_(rcx));
-    DECLARE("R64_RDX",    R64_(rdx));
-    DECLARE("R64_RSI",    R64_(rsi));
-    DECLARE("R64_RDI",    R64_(rdi));
-    DECLARE("R64_V_ARG6", R64_(v_arg6));
-    DECLARE("R64_V_ARG7", R64_(v_arg7));
-    DECLARE("R64_V_ARG8", R64_(v_arg8));
-    DECLARE("R64_CS",     R64_(isf.cs));
-    DECLARE("R64_SS",     R64_(isf.ss));
-    DECLARE("R64_RSP",    R64_(isf.rsp));
-    DECLARE("R64_TRAPNO", R64_(isf.trapno));
-    DECLARE("R64_TRAPFN", R64_(isf.trapfn));
-    DECLARE("R64_ERR",    R64_(isf.err));
-    DECLARE("R64_RFLAGS", R64_(isf.rflags));
-    DECLARE("R64_RIP",    R64_(isf.rip));
-    DECLARE("R64_CR2",    R64_(cr2));
-    DECLARE("ISS64_OFFSET", R64_(isf));
-    DECLARE("ISS64_SIZE",   sizeof(x86_saved_state64_t));
+#define R_(x)  offsetof(TaskSavedState *, State.T32.x)
+    DECLARE("R32_CS",     R_(CS));
+    DECLARE("R32_SS",     R_(SS));
+    DECLARE("R32_DS",     R_(DS));
+    DECLARE("R32_ES",     R_(ES));
+    DECLARE("R32_FS",     R_(FS));
+    DECLARE("R32_GS",     R_(GS));
+    DECLARE("R32_UESP",   R_(UserESP));
+    DECLARE("R32_EBP",    R_(EBP));
+    DECLARE("R32_EAX",    R_(EAX));
+    DECLARE("R32_EBX",    R_(EBX));
+    DECLARE("R32_ECX",    R_(ECX));
+    DECLARE("R32_EDX",    R_(EDX));
+    DECLARE("R32_ESI",    R_(ESI));
+    DECLARE("R32_EDI",    R_(EDI));
+    DECLARE("R32_TRAPNO", R_(TrapNumber));
+    DECLARE("R32_ERR",    R_(Error));
+    DECLARE("R32_EFLAGS", R_(EFlags));
+    DECLARE("R32_EIP",    R_(EIP));
+    DECLARE("R32_CR2",    R_(CR2));
+    DECLARE("ISS32_SIZE", sizeof(TaskSavedState32));
 
-#define ISF64_(x)  offsetof(x86_64_intr_stack_frame *, x)
-    DECLARE("ISF64_TRAPNO", ISF64_(trapno));
-    DECLARE("ISF64_TRAPFN", ISF64_(trapfn));
-    DECLARE("ISF64_ERR",    ISF64_(err));
-    DECLARE("ISF64_RIP",    ISF64_(rip));
-    DECLARE("ISF64_CS",     ISF64_(cs));
-    DECLARE("ISF64_RFLAGS", ISF64_(rflags));
-    DECLARE("ISF64_RSP",    ISF64_(rsp));
-    DECLARE("ISF64_SS",     ISF64_(ss));
-    DECLARE("ISF64_SIZE",   sizeof(x86_64_intr_stack_frame));
+#define R64_(x)  offsetof(TaskSavedState *, State.T64.x)
+    DECLARE("R64_FS",     R64_(GS));
+    DECLARE("R64_GS",     R64_(GS));
+    DECLARE("R64_R8",     R64_(R8));
+    DECLARE("R64_R9",     R64_(R9));
+    DECLARE("R64_R10",    R64_(R10));
+    DECLARE("R64_R11",    R64_(R11));
+    DECLARE("R64_R12",    R64_(R12));
+    DECLARE("R64_R13",    R64_(R13));
+    DECLARE("R64_R14",    R64_(R14));
+    DECLARE("R64_R15",    R64_(R15));
+    DECLARE("R64_RBP",    R64_(RBP));
+    DECLARE("R64_RAX",    R64_(RAX));
+    DECLARE("R64_RBX",    R64_(RBX));
+    DECLARE("R64_RCX",    R64_(RCX));
+    DECLARE("R64_RDX",    R64_(RDX));
+    DECLARE("R64_RSI",    R64_(RSI));
+    DECLARE("R64_RDI",    R64_(RDI));
+    DECLARE("R64_V_ARG6", R64_(Arg6));
+    DECLARE("R64_V_ARG7", R64_(Arg7));
+    DECLARE("R64_V_ARG8", R64_(Arg8));
+    DECLARE("R64_CS",     R64_(Interrupt.CS));
+    DECLARE("R64_SS",     R64_(Interrupt.SS));
+    DECLARE("R64_RSP",    R64_(Interrupt.RSP));
+    DECLARE("R64_TRAPNO", R64_(Interrupt.TrapNumber));
+    DECLARE("R64_TRAPFN", R64_(Interrupt.TrapFunction));
+    DECLARE("R64_ERR",    R64_(Interrupt.Error));
+    DECLARE("R64_RFLAGS", R64_(Interrupt.RFlags));
+    DECLARE("R64_RIP",    R64_(Interrupt.RIP));
+    DECLARE("R64_CR2",    R64_(CR2));
+    DECLARE("ISS64_OFFSET", R64_(Interrupt));
+    DECLARE("ISS64_SIZE",   sizeof(TaskSavedState64));
+
+#define ISF64_(x)  offsetof(InterruptStackFrame *, x)
+    DECLARE("ISF64_TRAPNO", ISF64_(TrapNumber));
+    DECLARE("ISF64_TRAPFN", ISF64_(TrapFunction));
+    DECLARE("ISF64_ERR",    ISF64_(Error));
+    DECLARE("ISF64_RIP",    ISF64_(RIP));
+    DECLARE("ISF64_CS",     ISF64_(CS));
+    DECLARE("ISF64_RFLAGS", ISF64_(RFlags));
+    DECLARE("ISF64_RSP",    ISF64_(RSP));
+    DECLARE("ISF64_SS",     ISF64_(SS));
+    DECLARE("ISF64_SIZE",   sizeof(InterruptStackFrame));
 
     return 0;
 }
