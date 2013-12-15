@@ -45,11 +45,43 @@
 #ifndef __ASSEMBLER__
 
 #include <stdint.h>
+#include <planck/compiler.h>
 
-typedef uint64_t        pml4_entry_t;
-typedef uint64_t        pdpt_entry_t;
-typedef uint64_t        pd_entry_t;
-typedef uint64_t        pt_entry_t;
-typedef uint64_t        pmap_paddr_t;
+#define MRF_NONE     0
+#define MRF_BIG_PAGE 1
+
+#define PBF_NONE 0
+#define PBF_BIG_PAGE 1
+#define PBF_MASK 0xFFF
+#define PBA_MASK 0xFFFFFFFFFFFFF000
+
+typedef uint64_t pml4_entry_t;
+typedef uint64_t pdpt_entry_t;
+typedef uint64_t pd_entry_t;
+typedef uint64_t pt_entry_t;
+typedef uint64_t pmap_paddr_t;
+
+typedef struct memory_region_entry
+{
+    uintptr_t base;
+    uintptr_t size;
+    struct memory_region_entry *a_prev, *a_next;
+    struct memory_region_entry *s_prev, *s_next;
+} memory_region_entry_t;
+
+typedef struct
+{
+    uintptr_t base;
+    uintptr_t limit;
+    memory_region_entry_t *a_head;
+    memory_region_entry_t *s_head;
+    memory_region_entry_t *u_head;
+} memory_region_t;
+
+__BEGIN_DECLS
+
+void page_init();
+
+__END_DECLS
 
 #endif

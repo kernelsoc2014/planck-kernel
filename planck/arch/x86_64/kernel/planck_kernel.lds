@@ -42,7 +42,7 @@ SECTIONS
     .brk ALIGN(PAGE_SIZE) : AT(ADDR(.brk) - KERNEL_VIRTUAL_ADDRESS)
     {
         __brk_base = .;
-        . += 4 + 80 * 1024;
+        . += 64 * 1024;
         __brk_limit = .;
     }
 

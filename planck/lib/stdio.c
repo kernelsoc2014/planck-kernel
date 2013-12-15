@@ -65,7 +65,7 @@ static int skip_atoi(const char **s)
   return i;
 }
 
-static char *number(char *str, long num, int base, int size, int
+static char *number(char *str, size_t num, int base, int size, int
                     precision, int type, size_t *max_size)
 {
   char c,sign,tmp[66] = {'\0'};
@@ -156,7 +156,7 @@ static char *number(char *str, long num, int base, int size, int
 
 int vsnprintf(char* buf, size_t size, const char* fmt, va_list args) {
 	int len;
-  unsigned long num;
+  size_t num;
   int i, base;
   char *str;
   const char *s;
@@ -272,7 +272,7 @@ int vsnprintf(char* buf, size_t size, const char* fmt, va_list args) {
 
       case 'n':
         if(qualifier == 'l') {
-          long *ip = va_arg(args,long*);
+          size_t *ip = va_arg(args,size_t*);
           *ip = (str - buf);
         } else {
           int *ip = va_arg(args,int*);
@@ -400,7 +400,7 @@ int vsnprintf(char* buf, size_t size, const char* fmt, va_list args) {
       }
 
       if(qualifier == 'l')
-        num = va_arg(args,unsigned long);
+        num = va_arg(args,size_t);
       else if(qualifier == 'h') {
         if(flags & SIGN)
           num = va_arg(args,short);
