@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <planck/kmalloc.h>
+#include <planck/memorymanager.h>
 #include <arch/earlyoutput.h>
 
 #define _COMPONENT          ACPI_OS_SERVICES
@@ -62,7 +63,7 @@ void AcpiOsUnmapMemory(void *where, ACPI_SIZE length)
 
 ACPI_STATUS AcpiOsGetPhysicalAddress(void *LogicalAddress, ACPI_PHYSICAL_ADDRESS *PhysicalAddress)
 {
-    *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS)LogicalAddress;
+    *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS)MmGetPhysicalAddress((uintptr_t)LogicalAddress);
     return AE_OK;
 }
 

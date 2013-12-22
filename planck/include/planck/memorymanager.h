@@ -28,6 +28,6 @@ typedef enum
 uintptr_t MmMapPage(KernelMemoryZone zone, uintptr_t address, uintptr_t physicalAddress, uintptr_t size, AllocPageFlags flags);
 uintptr_t MmAllocPage(KernelMemoryZone zone, uintptr_t address, uintptr_t size, AllocPageFlags flags);
 uintptr_t MmFreePage(KernelMemoryZone zone, uintptr_t address, uintptr_t size);
-uintptr_t MmGetPhysicalAddress(KernelMemoryZone zone, uintptr_t address);
+uintptr_t MmGetPhysicalAddress(uintptr_t address);
 
 __END_DECLS
